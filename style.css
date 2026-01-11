@@ -1,0 +1,73 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+}
+
+header {
+  background: #020617;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 20px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.user a {
+  color: #facc15;
+  text-decoration: none;
+  margin-left: 10px;
+}
+
+nav {
+  background: #020617;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+nav button {
+  background: #1e293b;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+.card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.card span {
+  display: block;
+  margin: 10px 0;
+  color: #facc15;
+}
+
+.card button {
+  background: #38bdf8;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+

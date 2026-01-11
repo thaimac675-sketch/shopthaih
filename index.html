@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Shop Liên Quân</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">SHOP LIÊN QUÂN</div>
+  <div class="user">
+    <a href="login.html">Đăng nhập</a> |
+    <a href="nap.html">Nạp tiền</a>
+  </div>
+</header>
+
+<nav>
+  <button onclick="filter('all')">Tất cả</button>
+  <button onclick="filter('vq')">Acc Vòng Quay</button>
+  <button onclick="filter('50')">Acc 50K</button>
+  <button onclick="filter('100')">Acc 100K</button>
+  <button onclick="filter('250')">Acc 250K</button>
+</nav>
+
+<section class="products">
+
+  <div class="card vq">
+    <h3>ACC Vòng Quay Quân Huy</h3>
+    <p>Skin hiếm – Tướng full</p>
+    <span>Giá: 150.000đ</span>
+    <button onclick="buy()">Mua ngay</button>
+  </div>
+
+  <div class="card 50">
+    <h3>ACC Liên Quân 50K</h3>
+    <p>Ngẫu nhiên – Rank thấp</p>
+    <span>Giá: 50.000đ</span>
+    <button onclick="buy()">Mua ngay</button>
+  </div>
+
+  <div class="card 100">
+    <h3>ACC Liên Quân 100K</h3>
+    <p>Nhiều skin – Rank trung</p>
+    <span>Giá: 100.000đ</span>
+    <button onclick="buy()">Mua ngay</button>
+  </div>
+
+  <div class="card 250">
+    <h3>ACC Liên Quân 250K</h3>
+    <p>Skin xịn – Rank cao</p>
+    <span>Giá: 250.000đ</span>
+    <button onclick="buy()">Mua ngay</button>
+  </div>
+
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
+
