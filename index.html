@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Shop Liên Quân</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop Liên Quân</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-  <div class="logo">SHOP LIÊN QUÂN</div>
-  <div class="user">
-    <a href="login.html">Đăng nhập</a> |
-    <a href="naptien.html">Nạp tiền</a>
-  </div>
+    <div class="logo">★ SHOP LIÊN QUÂN ★</div>
+    <div class="user">
+        <a href="login.html">Đăng nhập</a> | 
+        <a href="naptien.html">Nạp tiền</a>
+    </div>
 </header>
 
 <nav>
-  <button onclick="filter('all')">Tất cả</button>
-  <button onclick="filter('vq')">Acc Vòng Quay</button>
-  <button onclick="filter('50')">Acc 50K</button>
-  <button onclick="filter('100')">Acc 100K</button>
-  <button onclick="filter('250')">Acc 250K</button>
+    <button onclick="filter('all')">Tất cả</button>
+    <button onclick="filter('vq')">Acc Vòng Quay</button>
+    <button onclick="filter('50')">Acc 50K</button>
+    <button onclick="filter('100')">Acc 100K</button>
 </nav>
+
 <section class="products">
-  <div class="card vq">
-    <div class="card-img">
-      <img src="https://via.placeholder.com/150" alt="Acc Vòng Quay">
+    <div class="card vq">
+        <img src="https://upload.wikimedia.org/wikipedia/vi/b/b3/Li%C3%AAn_Qu%C3%A2n_Mobile_logo.png" alt="Acc LQ">
+        <div class="card-body">
+            <h3>ACC LQ DƯỚI 1M</h3>
+            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
+            <div class="discount-tag">Siêu giảm giá tới 50%</div>
+            <button onclick="buy()">Mua ngay</button>
+        </div>
     </div>
-    <div class="card-info">
-      <h3>ACC Vòng Quay Quân Huy</h3>
-      <p>Skin hiếm – Tướng full</p>
-      <span>Giá: 150.000đ</span>
-      <button onclick="buy()">Mua ngay</button>
-    </div>
-  </div>
 
-  <div class="card 50">
-    <div class="card-img">
-      <img src="https://via.placeholder.com/150" alt="Acc 50k">
+    <div class="card 50">
+        <img src="https://upload.wikimedia.org/wikipedia/vi/b/b3/Li%C3%AAn_Qu%C3%A2n_Mobile_logo.png" alt="Acc LQ">
+        <div class="card-body">
+            <h3>ACC LQ DƯỚI 2M</h3>
+            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
+            <div class="discount-tag">Siêu giảm giá tới 50%</div>
+            <button onclick="buy()">Mua ngay</button>
+        </div>
     </div>
-    <div class="card-info">
-      <h3>ACC Liên Quân 50K</h3>
-      <p>Ngẫu nhiên – Rank thấp</p>
-      <span>Giá: 50.000đ</span>
-      <button onclick="buy()">Mua ngay</button>
-    </div>
-  </div>
 </section>
-
-
 
 <script src="script.js"></script>
 </body>
