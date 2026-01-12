@@ -1,5 +1,9 @@
 function buy() {
-  alert("Demo shop: Vui lòng đăng nhập và nạp tiền để mua acc.");
+  document.getElementById("customAlert").style.display = "flex";
+}
+
+function closeAlert() {
+  document.getElementById("customAlert").style.display = "none";
 }
 
 function filter(type) {

@@ -9,7 +9,7 @@
 <body>
 
 <header>
-    <div class="logo">★ SHOP LIÊN QUÂN ★</div>
+    <div class="logo">★ SHOP Thasi ★</div>
     <div class="user">
         <a href="login.html">Đăng nhập</a> | 
         <a href="naptien.html">Nạp tiền</a>
@@ -18,14 +18,21 @@
 
 <nav>
     <button onclick="filter('all')">Tất cả</button>
-    <button onclick="filter('vq')">Acc Vòng Quay</button>
-    <button onclick="filter('50')">Acc 50K</button>
-    <button onclick="filter('100')">Acc 100K</button>
 </nav>
 
 <section class="products">
     <div class="card vq">
-        <img src="anh1.jpg" alt="Acc Nakroth">
+        <img src="anh1.jpg" alt="Acc 1M">
+        <div class="card-body">
+            <h3>ACC LQ DƯỚI 2M</h3>
+            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
+            <div class="discount-tag">Siêu giảm giá tới 50%</div>
+            <button onclick="buy()">Mua ngay</button>
+        </div>
+    </div>
+
+    <div class="card 50">
+        <img src="anh2.jpg" alt="Acc 2M">
         <div class="card-body">
             <h3>ACC LQ DƯỚI 1M</h3>
             <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
@@ -34,18 +41,45 @@
         </div>
     </div>
 
-    <div class="card 50">
-        <img src="anh2.jpg" alt="Acc Triệu Vân">
+    <div class="card 250k">
+        <img src="anh3.jpg" alt="Acc 250k">
         <div class="card-body">
-            <h3>ACC LQ DƯỚI 2M</h3>
-            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
-            <div class="discount-tag">Siêu giảm giá tới 50%</div>
+            <h3>ACC LQ DƯỚI 250K</h3>
+            <p>Acc Ngon <span class="highlight">Giá Rẻ</span></p>
+            <div class="discount-tag">Giảm giá 30%</div>
+            <button onclick="buy()">Mua ngay</button>
+        </div>
+    </div>
+
+    <div class="card 150k">
+        <img src="anh4.jpg" alt="Acc 150k">
+        <div class="card-body">
+            <h3>ACC LQ DƯỚI 150K</h3>
+            <p>Acc Giá <span class="highlight">Học Sinh</span></p>
+            <div class="discount-tag">Đồng giá 150k</div>
+            <button onclick="buy()">Mua ngay</button>
+        </div>
+    </div>
+
+    <div class="card 50">
+        <img src="anh5.jpg" alt="Acc 50k">
+        <div class="card-body">
+            <h3>ACC LQ DƯỚI 50K</h3>
+            <p>Acc <span class="highlight">Siêu Rẻ</span></p>
+            <div class="discount-tag">Xả kho 50k</div>
             <button onclick="buy()">Mua ngay</button>
         </div>
     </div>
 </section>
 
 <script src="script.js"></script>
+    <div id="customAlert" class="modal">
+  <div class="modal-content">
+    <h2 style="color: #e11d48;">SHOP</h2>
+    <p>Vui lòng đăng nhập và nạp tiền để mua acc.</p>
+    <button onclick="closeAlert()">Đóng</button>
+  </div>
+</div>
 </body>
 </html>
 
