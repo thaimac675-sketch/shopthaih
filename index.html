@@ -114,6 +114,10 @@
 </body>
 </html>
 <script>
+    </section>
+
+<script>
+    // Hàm này phải nằm trong thẻ script để không bị hiện chữ ra ngoài
     function checkUser() {
         const loggedUser = localStorage.getItem("currentUser");
         const userHeader = document.querySelector(".user");
@@ -134,6 +138,7 @@
         location.reload();
     }
 
-    // Kích hoạt kiểm tra khi trang tải xong
     window.onload = checkUser;
 </script>
+</body>
+</html>
