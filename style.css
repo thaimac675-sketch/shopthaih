@@ -1,73 +1,103 @@
 body {
-  margin: 0;
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f5f9;
+    color: #333;
 }
 
 header {
-  background: #020617;
-  display: flex;
-  justify-content: space-between;
-  padding: 15px 20px;
+    background: #fff;
+    padding: 15px;
+    text-align: center;
+    border-bottom: 2px solid #e11d48;
 }
 
-.logo {
-  font-size: 20px;
-  font-weight: bold;
-  color: #38bdf8;
+header .logo {
+    color: #e11d48;
+    font-size: 20px;
+    font-weight: bold;
 }
 
-.user a {
-  color: #facc15;
-  text-decoration: none;
-  margin-left: 10px;
+header .user a {
+    text-decoration: none;
+    color: #2563eb;
+    font-weight: bold;
 }
 
 nav {
-  background: #020617;
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding: 10px;
+    background: #fff;
 }
 
 nav button {
-  background: #1e293b;
-  color: white;
-  border: none;
-  padding: 8px 14px;
-  cursor: pointer;
-  border-radius: 5px;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border: 1px solid #ddd;
+    background: #f8fafc;
+    border-radius: 4px;
 }
 
 .products {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 15px;
-  padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 10px;
 }
 
 .card {
-  background: #020617;
-  border: 1px solid #1e293b;
-  padding: 15px;
-  border-radius: 10px;
-  text-align: center;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    text-align: center;
 }
 
-.card span {
-  display: block;
-  margin: 10px 0;
-  color: #facc15;
+.card img {
+    width: 100%;
+    height: 110px;
+    object-fit: contain; /* Giúp hiện rõ logo không bị mất hình */
+    background: #eee;
+    display: block;
+}
+
+.card-body {
+    padding: 10px;
+}
+
+.card h3 {
+    font-size: 13px;
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+.highlight {
+    color: red;
+    font-weight: bold;
+}
+
+.discount-tag {
+    background: #ff4d4d;
+    color: white;
+    font-size: 9px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin: 5px 0;
 }
 
 .card button {
-  background: #38bdf8;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 6px;
-  cursor: pointer;
+    width: 100%;
+    background: #38bdf8;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: bold;
 }
-
+  
+  
 
