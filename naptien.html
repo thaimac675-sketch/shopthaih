@@ -1,21 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-<meta charset="UTF-8">
-<title>Nạp tiền</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp tiền bằng thẻ cào</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Tối ưu riêng cho trang nạp tiền */
+        .nap-container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+        .nap-form input, .nap-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box; /* Giúp input không bị tràn */
+            font-size: 16px;
+        }
+        .btn-nap {
+            width: 100%;
+            background: #22c55e; /* Màu xanh lá giống nút NẠP NGAY */
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        h2 { color: #e11d48; text-align: center; font-size: 20px; }
+    </style>
 </head>
 <body>
 
-<div class="card" style="max-width:350px;margin:50px auto;">
-<h3>Nạp tiền (Demo)</h3>
-<select>
-  <option>50.000đ</option>
-  <option>100.000đ</option>
-  <option>250.000đ</option>
-</select><br><br>
-<button onclick="alert('Nạp tiền demo thành công')">Xác nhận</button>
+<header>
+    <div class="logo">★ SHOP THAI ★</div>
+    <div class="user"><a href="index.html">Quay lại trang chủ</a></div>
+</header>
+
+<div class="nap-container">
+    <div class="card">
+        <h2>Nạp tiền bằng thẻ cào</h2>
+        <div class="nap-form">
+            <select id="nhaMang">
+                <option value="">-- Chọn nhà mạng --</option>
+                <option value="viettel">Viettel</option>
+                <option value="vinaphone">Vinaphone</option>
+                <option value="mobifone">Mobifone</option>
+                <option value="zing">Zing</option>
+                <option value="garena">Garena</option>
+            </select>
+
+            <select id="menhGia">
+                <option value="">-- Mệnh giá --</option>
+                <option value="10000">10,000đ</option>
+                <option value="20000">20,000đ</option>
+                <option value="50000">50,000đ</option>
+                <option value="100000">100,000đ</option>
+                <option value="200000">200,000đ</option>
+                <option value="500000">500,000đ</option>
+            </select>
+
+            <input type="text" id="maThe" placeholder="Mã thẻ">
+            <input type="text" id="seri" placeholder="Số Seri">
+
+            <button class="btn-nap" onclick="handleNap()">NẠP NGAY</button>
+        </div>
+    </div>
 </div>
+
+<script>
+    function handleNap() {
+        const nhaMang = document.getElementById('nhaMang').value;
+        const menhGia = document.getElementById('menhGia').value;
+        const maThe = document.getElementById('maThe').value;
+        const seri = document.getElementById('seri').value;
+
+        if (!nhaMang || !menhGia || !maThe || !seri) {
+            alert("Vui lòng nhập đầy đủ thông tin thẻ!");
+            return;
+        }
+        
+        // Demo thông báo
+        alert("Hệ thống đã nhận thẻ " + nhaMang.toUpperCase() + " mệnh giá " + menhGia + ". Vui lòng đợi duyệt!");
+    }
+</script>
 
 </body>
 </html>

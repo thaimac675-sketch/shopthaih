@@ -5,16 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Liên Quân</title>
     <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
 <header>
-    <div class="logo">★ SHOP Thasi ★</div>
-    <div class="user">
-        <a href="login.html">Đăng nhập</a> | 
-        <a href="naptien.html">Nạp tiền</a>
+    <div class="logo">★ SHOP THAIPP ★</div>
+    <div id="userHeader" class="user">
+        <a href="login.html">Đăng nhập</a> | <a href="naptien.html">Nạp tiền</a>
     </div>
 </header>
+
+<script>
+    // Tự động kiểm tra số dư khi mở trang web
+    function checkUser() {
+        const loggedUser = localStorage.getItem("currentUser"); // Lấy tên user đang đăng nhập
+        const userHeader = document.getElementById("userHeader");
+
+        if (loggedUser) {
+            // Lấy số dư từ Admin đã chỉnh
+            const balance = localStorage.getItem("balance_" + loggedUser) || 0;
+            userHeader.innerHTML = `
+                <span style="color:#e11d48; font-weight:bold;">${loggedUser}</span> | 
+                <span style="color:#22c55e; font-weight:bold;">Số dư: ${parseInt(balance).toLocaleString()}đ</span> | 
+                <a href="#" onclick="logout()" style="color:#666; font-size:12px;">Thoát</a>
+            `;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("currentUser");
+        location.reload();
+    }
+
+    window.onload = checkUser;
+</script>
 
 <nav>
     <button onclick="filter('all')">Tất cả</button>
@@ -80,6 +101,39 @@
     <button onclick="closeAlert()">Đóng</button>
   </div>
 </div>
+    <div id="customModal" class="modal-overlay">
+    <div class="modal-box">
+        <h2 id="modalTitle">SHOP THAIPP</h2>
+        <p id="modalMessage">Nội dung thông báo ở đây.</p>
+        <div class="modal-buttons">
+            <button onclick="closeModal()" class="btn-close">Đóng</button>
+            <button id="modalAction" class="btn-action" style="display:none;">Đăng nhập</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
+<script>
+    function checkUser() {
+        const loggedUser = localStorage.getItem("currentUser");
+        const userHeader = document.querySelector(".user");
 
+        if (loggedUser) {
+            let balance = localStorage.getItem("balance_" + loggedUser) || "0";
+            userHeader.innerHTML = `
+                <b style="color:#e11d48;">${loggedUser}</b> | 
+                <b style="color:#22c55e;">${parseInt(balance).toLocaleString()}đ</b> | 
+                <a href="naptien.html" style="color:#2563eb;">Nạp</a> |
+                <a href="#" onclick="logout()" style="color:#666; font-size:12px;">Thoát</a>
+            `;
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("currentUser");
+        location.reload();
+    }
+
+    // Kích hoạt kiểm tra khi trang tải xong
+    window.onload = checkUser;
+</script>
