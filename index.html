@@ -148,7 +148,7 @@
 </div>
 
 <script>
-    // 1. HÀM CẬP NHẬT GIAO DIỆN NGƯỜI DÙNG (HIỆN TÊN VÀ TIỀN)
+    // 1. HÀM HIỆN TÀI KHOẢN VÀ TIỀN (FIX TRIỆT ĐỂ)
     function updateHeader() {
         const user = localStorage.getItem("currentUser");
         const headerDiv = document.getElementById("userHeader");
@@ -156,42 +156,40 @@
         if (user && headerDiv) {
             const money = localStorage.getItem("balance_" + user) || "0";
             headerDiv.innerHTML = `
-                <div style="text-align: right; line-height: 1.3; background: #fff1f2; padding: 5px 10px; border-radius: 8px; border: 1px solid #fecdd3;">
-                    <div style="color: #e11d48; font-weight: bold; font-size: 14px;">👤 ${user}</div>
-                    <div style="color: #16a34a; font-weight: bold; font-size: 14px;">💰 ${parseInt(money).toLocaleString()}đ</div>
-                    <a href="javascript:void(0)" onclick="logout()" style="font-size: 11px; color: #64748b; text-decoration: none; font-style: italic;">[Đăng xuất]</a>
+                <div style="text-align: right; background: #fff1f2; padding: 8px 12px; border-radius: 10px; border: 1px solid #fecdd3; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <div style="color: #e11d48; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 5px;">
+                        <span>👤</span> ${user}
+                    </div>
+                    <div style="color: #16a34a; font-weight: bold; font-size: 15px;">
+                        💰 ${parseInt(money).toLocaleString()}đ
+                    </div>
+                    <a href="javascript:void(0)" onclick="logout()" style="font-size: 11px; color: #94a3b8; text-decoration: none; margin-top: 4px; display: block;">[Đăng xuất]</a>
                 </div>
             `;
         }
     }
 
-    // 2. HÀM ĐĂNG XUẤT
     function logout() {
-        if(confirm("Bạn muốn thoát tài khoản chứ?")) {
+        if(confirm("Bạn muốn đăng xuất chứ?")) {
             localStorage.removeItem("currentUser");
             window.location.reload();
         }
     }
 
-    // 3. HÀM BỘ LỌC GIÁ (FILTER)
+    // 2. HÀM BỘ LỌC GIÁ
     function filterPrice(maxPrice, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-
         const categories = ["50", "150", "250", "500", "2000"];
         categories.forEach(cat => {
             const section = document.getElementById("section-" + cat);
             if (section) {
-                if (maxPrice === 'all' || parseInt(cat) === maxPrice) {
-                    section.style.display = "block";
-                } else {
-                    section.style.display = "none";
-                }
+                section.style.display = (maxPrice === 'all' || parseInt(cat) === maxPrice) ? "block" : "none";
             }
         });
     }
 
-    // 4. HÀM TẢI DANH SÁCH ACC TỪ ADMIN
+    // 3. HÀM TẢI ACC & FIX LỖI ẢNH (OBJECT-FIT COVER)
     function loadProducts() {
         const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
         const categories = ["50", "150", "250", "500", "2000"];
@@ -202,17 +200,44 @@
         });
 
         listAcc.forEach(acc => {
+            // FIX: Dùng object-fit: cover để ảnh không bị méo
             const cardHTML = `
-                <div class="card">
-                    <img src="${acc.img}" onerror="this.src='anh1.jpg'" style="width:100%; height:130px; object-fit:cover;">
-                    <div class="card-body" style="padding:10px;">
-                        <h3 style="font-size:13px; margin:5px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${acc.title}</h3>
-                        <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div style="background:#f43f5e; color:white; padding:4px 8px; border-radius:6px; font-weight:bold; display:inline-block; margin:5px 0; font-size:13px;">
+                <div class="card" style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee;">
+                    <img src="${acc.img}" 
+                         onerror="this.src='https://via.placeholder.com/300x150?text=Anh+Loi'" 
+                         style="width:100%; height:140px; object-fit: cover; display: block;">
+                    <div class="card-body" style="padding:12px;">
+                        <h3 style="font-size:14px; margin:0 0 5px 0; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${acc.title}</h3>
+                        <p style="font-size:12px; color:#64748b; margin:0;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+                        <div style="background:#f43f5e; color:white; padding:6px 12px; border-radius:8px; font-weight:bold; display:inline-block; margin:10px 0; font-size:14px;">
                             ${parseInt(acc.price).toLocaleString()}đ
                         </div>
                         <button style="width:100%; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="handleView()">XEM NGAY</button>
                     </div>
+                </div>
+            `;
+            const target = document.getElementById("container-" + acc.cat);
+            if (target) target.innerHTML += cardHTML;
+        });
+    }
+
+    function handleView() {
+        if (!localStorage.getItem("currentUser")) {
+            alert("Vui lòng đăng nhập để xem chi tiết!");
+            window.location.href = 'login.html';
+        } else {
+            window.location.href = 'chitiet.html';
+        }
+    }
+
+    // TỰ ĐỘNG CHẠY KHI VÀO TRANG
+    window.onload = function() {
+        updateHeader();
+        loadProducts();
+    };
+</script>
+</body>
+</html>
                 </div>
             `;
             const target = document.getElementById("container-" + acc.cat);
