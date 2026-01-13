@@ -180,4 +180,42 @@ nav button {
 
 .btn-close { background: #eee; color: #333; }
 .btn-action { background: #e11d48; color: #white; }
+/* Ép tất cả lưới sản phẩm về cùng một định dạng */
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Chia 2 cột đều nhau */
+    gap: 12px;
+    padding: 10px;
+}
 
+/* Chỉnh phần màu đỏ (giá tiền) to ra và đẹp hơn */
+.price-tag, .discount-tag {
+    background: #f43f5e !important;
+    color: white !important;
+    font-size: 13px !important; /* Làm chữ to ra */
+    font-weight: bold;
+    padding: 5px 10px !important; /* Làm khung to ra */
+    border-radius: 6px !important;
+    display: inline-block;
+    margin: 8px 0 !important;
+}
+
+/* Chỉnh nút bấm bên phải giống bên trái */
+.btn-xem {
+    width: 100%;
+    background: #3b82f6 !important; /* Màu xanh chuẩn */
+    color: white !important;
+    border: none !important;
+    padding: 10px !important; /* Tăng độ dày nút */
+    border-radius: 8px !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+    cursor: pointer;
+}
+
+/* Đảm bảo ảnh không làm méo card */
+.card img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+}
