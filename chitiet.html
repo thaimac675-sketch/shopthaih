@@ -29,8 +29,38 @@
             document.getElementById('p').innerText = parseInt(acc.price).toLocaleString() + "đ";
             document.getElementById('tg').innerText = acc.tuong;
             document.getElementById('sk').innerText = acc.skin;
+
+        function buy() {
+    const user = localStorage.getItem("currentUser");
+    if(!user) { alert("Vui lòng đăng nhập!"); return; }
+
+    let balance = parseInt(localStorage.getItem("balance_" + user) || "0");
+    let price = parseInt(acc.price);
+
+    if (balance < price) {
+        alert("❌ BẠN KHÔNG ĐỦ TIỀN! Vui lòng nạp thêm để mua Acc này.");
+    } else {
+        // 1. Thông báo thành công
+        alert("✅ GIAO DỊCH THÀNH CÔNG! Bạn có thể xem tài khoản tại Lịch Sử Mua.");
+
+        // 2. Trừ tiền người dùng
+        localStorage.setItem("balance_" + user, balance - price);
+
+        // 3. Lưu vào Lịch Sử Mua Acc
+        let history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
+        const buyDate = new Date().toLocaleString(); // Lấy ngày giờ mua
+        history.push({ ...acc, date: buyDate });
+        localStorage.setItem("history_" + user, JSON.stringify(history));
+
+        // 4. XÓA ACC KHỎI SHOP
+        let listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        listAcc = listAcc.filter(item => item.id != acc.id); // Lọc bỏ Acc vừa mua
+        localStorage.setItem("shop_accs", JSON.stringify(listAcc));
+
+        // 5. Chuyển hướng về trang lịch sử
+        window.location.href = "lichsu.html";
+    }
         }
-        function buy() { alert("Đã gửi yêu cầu mua tới Admin!"); }
     </script>
 </body>
 </html>
