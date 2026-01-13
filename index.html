@@ -194,20 +194,19 @@
         });
 
         listAcc.forEach(acc => {
-            const cardHTML = `
-                <div class="card">
-<img src="${acc.img}" alt="Acc Game" onerror="this.src='https://via.placeholder.com/300x150?text=Loi+Anh'">
-                    <div class="card-body" style="padding:10px;">
-                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
-                        <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div class="discount-tag">${parseInt(acc.price).toLocaleString()}đ</div>
-                        <button class="btn-xem" style="width:100%; margin-top:10px; padding:10px; font-size:14px; font-weight:bold; background:#3b82f6; color:white; border:none; border-radius:8px;" onclick="handleView()">XEM NGAY</button>
-                    </div>
-                </div>
-            `;
-            const target = document.getElementById("container-" + acc.cat);
-            if (target) target.innerHTML += cardHTML;
-        });
+const cardHTML = `
+    <div class="card">
+        <img src="${acc.img}" alt="${acc.title}">
+        <div class="card-body" style="padding:10px;">
+            <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
+            <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+            <div class="discount-tag">
+                ${parseInt(acc.price).toLocaleString()}đ
+            </div>
+            <button class="btn-xem" onclick="handleView()">XEM NGAY</button>
+        </div>
+    </div>
+`;
     }
 
     function handleView() {
