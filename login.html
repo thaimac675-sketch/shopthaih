@@ -1,60 +1,20 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập - SHOP THAIPP</title>
-    <style>
-        body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
-        h2 { color: #e11d48; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        .switch { margin-top: 15px; font-size: 14px; color: #64748b; }
-        b { color: #2563eb; cursor: pointer; }
-    </style>
+    <meta charset="UTF-8"><title>Đăng nhập</title>
 </head>
-<body>
-    <div class="card">
-        <div id="login-box">
-            <h2>ĐĂNG NHẬP</h2>
-            <input type="text" id="u-login" placeholder="Tên tài khoản">
-            <input type="password" id="p-login" placeholder="Mật khẩu">
-            <button onclick="handleLogin()">VÀO SHOP</button>
-            <div class="switch">Chưa có nick? <b onclick="toggle()">Đăng ký ngay</b></div>
-        </div>
-        <div id="reg-box" style="display:none">
-            <h2>ĐĂNG KÝ</h2>
-            <input type="text" id="u-reg" placeholder="Tên tài khoản mới">
-            <input type="password" id="p-reg" placeholder="Mật khẩu">
-            <button onclick="handleReg()" style="background:#22c55e">TẠO NICK</button>
-            <div class="switch">Đã có nick? <b onclick="toggle()">Đăng nhập ngay</b></div>
-        </div>
+<body style="font-family:sans-serif; text-align:center; padding-top:100px; background:#f1f5f9;">
+    <div style="background:white; display:inline-block; padding:30px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
+        <h2 style="color:#e11d48;">ĐĂNG NHẬP SHOP</h2>
+        <input type="text" id="u" placeholder="Tên tài khoản" style="width:250px; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;"><br>
+        <button onclick="login()" style="width:275px; padding:12px; background:#e11d48; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">VÀO CỬA HÀNG</button>
     </div>
-
     <script>
-        function toggle() {
-            const login = document.getElementById('login-box');
-            const reg = document.getElementById('reg-box');
-            login.style.display = login.style.display === 'none' ? 'block' : 'none';
-            reg.style.display = reg.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('u-login').value.trim();
-            if(!u) return alert("Nhập tên tài khoản!");
-            localStorage.setItem("currentUser", u);
-            if(!localStorage.getItem("balance_" + u)) localStorage.setItem("balance_" + u, "0");
-            alert("Đăng nhập thành công!");
-            window.location.href = "index.html";
-        }
-
-        function handleReg() {
-            const u = document.getElementById('u-reg').value.trim();
-            if(!u) return alert("Nhập tên muốn tạo!");
-            localStorage.setItem("currentUser", u);
-            localStorage.setItem("balance_" + u, "0");
-            alert("Đăng ký thành công!");
+        function login() {
+            const user = document.getElementById('u').value.trim();
+            if(!user) return alert("Nhập tên!");
+            localStorage.setItem("currentUser", user);
+            if(!localStorage.getItem("balance_" + user)) localStorage.setItem("balance_" + user, "0");
             window.location.href = "index.html";
         }
     </script>
