@@ -200,34 +200,40 @@
         });
 
         listAcc.forEach(acc => {
-            // FIX: Dùng object-fit: cover để ảnh không bị méo
-            const cardHTML = `
-                <div class="card" style="background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee;">
-                    <img src="${acc.img}" 
-                         onerror="this.src='https://via.placeholder.com/300x150?text=Anh+Loi'" 
-                         style="width:100%; height:140px; object-fit: cover; display: block;">
-                    <div class="card-body" style="padding:12px;">
-                        <h3 style="font-size:14px; margin:0 0 5px 0; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${acc.title}</h3>
-                        <p style="font-size:12px; color:#64748b; margin:0;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div style="background:#f43f5e; color:white; padding:6px 12px; border-radius:8px; font-weight:bold; display:inline-block; margin:10px 0; font-size:14px;">
-                            ${parseInt(acc.price).toLocaleString()}đ
-                        </div>
-                        <button style="width:100%; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="handleView()">XEM NGAY</button>
-                    </div>
+// Sửa lại cách tạo Card Acc trong hàm loadProducts
+listAcc.forEach(acc => {
+    const cardHTML = `
+        <div class="card">
+            <img src="${acc.img}" onerror="this.src='anh1.jpg'" style="width:100%; height:140px; object-fit:cover;">
+            <div class="card-body">
+                <h3 style="font-size:13px;">${acc.title}</h3>
+                <p style="font-size:11px;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+                <div class="price-tag" style="background:#f43f5e; color:white; padding:5px; border-radius:5px; font-weight:bold;">
+                    ${parseInt(acc.price).toLocaleString()}đ
                 </div>
-            `;
-            const target = document.getElementById("container-" + acc.cat);
-            if (target) target.innerHTML += cardHTML;
-        });
-    }
+                <button class="btn-xem" onclick="handleView(${acc.id})" style="width:100%; margin-top:10px; cursor:pointer;">XEM NGAY</button>
+            </div>
+        </div>
+    `;
+    const target = document.getElementById("container-" + acc.cat);
+    if (target) target.innerHTML += cardHTML;
+});
 
-    function handleView() {
-        if (!localStorage.getItem("currentUser")) {
-            alert("Vui lòng đăng nhập để xem chi tiết!");
-            window.location.href = 'login.html';
-        } else {
-            window.location.href = 'chitiet.html';
-        }
+// Sửa lại hàm handleView để lưu Acc đang chọn
+function handleView(accId) {
+    if (!localStorage.getItem("currentUser")) {
+        alert("Vui lòng đăng nhập!");
+        window.location.href = 'login.html';
+        return;
+    }
+    // Tìm Acc trong danh sách bằng ID và lưu vào bộ nhớ tạm
+    const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+    const selectedAcc = listAcc.find(a => a.id == accId);
+    
+    if (selectedAcc) {
+        localStorage.setItem("viewingAcc", JSON.stringify(selectedAcc));
+        window.location.href = 'chitiet.html';
+    }
     }
 
     // TỰ ĐỘNG CHẠY KHI VÀO TRANG
