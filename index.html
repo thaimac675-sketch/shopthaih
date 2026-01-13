@@ -3,8 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Liên Quân</title>
+    <title>Shop Liên Quân - THAIPP</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* CSS sửa lỗi độ dài và làm phần màu đỏ to ra */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 10px;
+        }
+        .cat-title {
+            width: 100%;
+            font-size: 16px;
+            color: #e11d48;
+            margin: 20px 10px 5px 10px;
+            font-weight: bold;
+            display: block;
+        }
+        /* Chỉnh phần màu đỏ to ra theo ý bạn */
+        .discount-tag {
+            font-size: 13px !important;
+            background: #f43f5e !important;
+            color: white !important;
+            padding: 5px 10px !important;
+            display: inline-block !important;
+            border-radius: 6px !important;
+            font-weight: bold !important;
+            margin: 8px 0 !important;
+        }
+        .btn-xem {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+            background: #3b82f6 !important;
+            border-radius: 8px !important;
+        }
+        /* Modal thông báo nhỏ gọn */
+        .modal-overlay-small {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .modal-box-small {
+            background: white; padding: 20px; border-radius: 10px;
+            width: 80%; max-width: 300px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+
 <header>
     <div class="logo">★ SHOP THAIPP ★</div>
     <div id="userHeader" class="user">
@@ -12,122 +64,43 @@
     </div>
 </header>
 
-<script>
-    // Tự động kiểm tra số dư khi mở trang web
-    function checkUser() {
-        const loggedUser = localStorage.getItem("currentUser"); // Lấy tên user đang đăng nhập
-        const userHeader = document.getElementById("userHeader");
-
-        if (loggedUser) {
-            // Lấy số dư từ Admin đã chỉnh
-            const balance = localStorage.getItem("balance_" + loggedUser) || 0;
-            userHeader.innerHTML = `
-                <span style="color:#e11d48; font-weight:bold;">${loggedUser}</span> | 
-                <span style="color:#22c55e; font-weight:bold;">Số dư: ${parseInt(balance).toLocaleString()}đ</span> | 
-                <a href="#" onclick="logout()" style="color:#666; font-size:12px;">Thoát</a>
-            `;
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem("currentUser");
-        location.reload();
-    }
-
-    window.onload = checkUser;
-</script>
-
-<nav>
-    <button onclick="filter('all')">Tất cả</button>
-</nav>
-
 <section class="products">
-    <div class="card vq">
-        <img src="anh1.jpg" alt="Acc 1M">
-        <div class="card-body">
-            <h3>ACC LQ DƯỚI 2M</h3>
-            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
-            <div class="discount-tag">Siêu giảm giá tới 50%</div>
-            <button class="btn-xem" onclick="handleView()">Xem</button>
-        </div>
-    </div>
+    <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 2M</h2>
+    <div id="container-2000" class="grid-layout"></div>
 
-    <div class="card 50">
-        <img src="anh2.jpg" alt="Acc 2M">
-        <div class="card-body">
-            <h3>ACC LQ DƯỚI 1M</h3>
-            <p>Acc Vip <span class="highlight">Giá Tận Gốc</span></p>
-            <div class="discount-tag">Siêu giảm giá tới 
-                <button class="btn-xem" onclick="handleView()">Xem</button>
-        </div>
-    </div>
+    <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 500K</h2>
+    <div id="container-500" class="grid-layout"></div>
 
-    <div class="card 250k">
-        <img src="anh3.jpg" alt="Acc 250k">
-        <div class="card-body">
-            <h3>ACC LQ DƯỚI 250K</h3>
-            <p>Acc Ngon <span class="highlight">Giá Rẻ</span></p>
-            <div class="discount-tag">Giảm giá 30%</div>
-            <button class="btn-xem" onclick="handleView()">Xem</button>
-        </div>
-    </div>
+    <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 250K</h2>
+    <div id="container-250" class="grid-layout"></div>
 
-    <div class="card 150k">
-        <img src="anh4.jpg" alt="Acc 150k">
-        <div class="card-body">
-            <h3>ACC LQ DƯỚI 150K</h3>
-            <p>Acc Giá <span class="highlight">Học Sinh</span></p>
-            <div class="discount-tag">Đồng giá 150k</div>
-            <button class="btn-xem" onclick="handleView()">Xem</button>
-        </div>
-    </div>
+    <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 150K</h2>
+    <div id="container-150" class="grid-layout"></div>
 
-    <div class="card 50">
-        <img src="anh5.jpg" alt="Acc 50k">
-        <div class="card-body">
-            <h3>ACC LQ DƯỚI 50K</h3>
-            <p>Acc <span class="highlight">Siêu Rẻ</span></p>
-            <div class="discount-tag">Xả kho 50k</div>
-            <button class="btn-xem" onclick="handleView()">Xem</button>
-        </div>
-    </div>
+    <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 50K</h2>
+    <div id="container-50" class="grid-layout"></div>
 </section>
 
-<script src="script.js"></script>
-    <div id="customAlert" class="modal">
-  <div class="modal-content">
-    <h2 style="color: #e11d48;">SHOP</h2>
-    <p>Vui lòng đăng nhập và nạp tiền để mua acc.</p>
-    <button onclick="closeAlert()">Đóng</button>
-  </div>
-</div>
-    <div id="customModal" class="modal-overlay">
-    <div class="modal-box">
-        <h2 id="modalTitle">SHOP THAIPP</h2>
-        <p id="modalMessage">Nội dung thông báo ở đây.</p>
-        <div class="modal-buttons">
-            <button onclick="closeModal()" class="btn-close">Đóng</button>
-            <button id="modalAction" class="btn-action" style="display:none;">Đăng nhập</button>
+<div id="customModal" class="modal-overlay-small">
+    <div class="modal-box-small">
+        <h3 id="modalTitle" style="color:#e11d48; margin-top:0;">THÔNG BÁO</h3>
+        <p id="modalMessage" style="font-size:14px; color:#333;"></p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="closeModal()" style="padding:8px 15px; border-radius:5px; border:1px solid #ddd;">Đóng</button>
+            <button id="modalAction" style="display:none; background:#e11d48; color:white; border:none; padding:8px 15px; border-radius:5px;">Đăng nhập</button>
         </div>
     </div>
 </div>
-</body>
-</html>
-<script>
-    </section>
 
 <script>
-    // Hàm này phải nằm trong thẻ script để không bị hiện chữ ra ngoài
     function checkUser() {
         const loggedUser = localStorage.getItem("currentUser");
-        const userHeader = document.querySelector(".user");
-
+        const userHeader = document.getElementById("userHeader");
         if (loggedUser) {
             let balance = localStorage.getItem("balance_" + loggedUser) || "0";
             userHeader.innerHTML = `
                 <b style="color:#e11d48;">${loggedUser}</b> | 
                 <b style="color:#22c55e;">${parseInt(balance).toLocaleString()}đ</b> | 
-                <a href="naptien.html" style="color:#2563eb;">Nạp</a> |
                 <a href="#" onclick="logout()" style="color:#666; font-size:12px;">Thoát</a>
             `;
         }
@@ -138,17 +111,54 @@
         location.reload();
     }
 
-    window.onload = checkUser;
+    function loadProducts() {
+        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        const categories = ["50", "150", "250", "500", "2000"];
+        
+        categories.forEach(id => {
+            const el = document.getElementById("container-" + id);
+            if(el) el.innerHTML = "";
+        });
+
+        listAcc.forEach(acc => {
+            const cardHTML = `
+                <div class="card">
+                    <img src="${acc.img}" onerror="this.src='anh1.jpg'">
+                    <div class="card-body" style="padding:10px;">
+                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
+                        <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+                        <div class="discount-tag">
+                            ${parseInt(acc.price).toLocaleString()}đ
+                        </div>
+                        <button class="btn-xem" onclick="handleView()">XEM NGAY</button>
+                    </div>
+                </div>
+            `;
+            const target = document.getElementById("container-" + acc.cat);
+            if (target) target.innerHTML += cardHTML;
+        });
+    }
+
+    function handleView() {
+        const loggedUser = localStorage.getItem("currentUser");
+        if (!loggedUser) {
+            document.getElementById("modalMessage").innerText = "Bạn cần đăng nhập để xem chi tiết Acc!";
+            document.getElementById("modalAction").style.display = "block";
+            document.getElementById("modalAction").onclick = () => window.location.href = 'login.html';
+            document.getElementById("customModal").style.display = "flex";
+        } else {
+            window.location.href = 'chitiet.html';
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("customModal").style.display = "none";
+    }
+
+    window.onload = () => {
+        checkUser();
+        loadProducts();
+    };
 </script>
-<div id="customModal" class="modal-overlay" style="display: none;">
-    <div class="modal-box">
-        <h2 id="modalTitle">THÔNG BÁO</h2>
-        <p id="modalMessage">Nội dung...</p>
-        <div class="modal-buttons">
-            <button onclick="closeModal()" class="btn-close">Đóng</button>
-            <button id="modalAction" class="btn-action" style="display:none;">Đăng nhập</button>
-        </div>
-    </div>
-</div>
 </body>
-</html>
+            </html>
