@@ -166,34 +166,7 @@
         });
     }
 
-    function checkUser() {
-        const loggedUser = localStorage.getItem("currentUser");
-        const userHeader = document.getElementById("userHeader");
-        if (loggedUser) {
-            let balance = localStorage.getItem("balance_" + loggedUser) || "0";
-            userHeader.innerHTML = `
-                <b style="color:#e11d48;">${loggedUser}</b> | 
-                <b style="color:#22c55e;">${parseInt(balance).toLocaleString()}đ</b> | 
-                <a href="#" onclick="logout()" style="color:#666; font-size:12px;">Thoát</a>
-            `;
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem("currentUser");
-        location.reload();
-    }
-
-    function loadProducts() {
-        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        const categories = ["50", "150", "250", "500", "2000"];
-        
-        categories.forEach(id => {
-            const el = document.getElementById("container-" + id);
-            if(el) el.innerHTML = "";
-        });
-
-        listAcc.forEach(acc => {
+ 
 const cardHTML = `
     <div class="card">
         <img src="${acc.img}" alt="${acc.title}">
@@ -232,3 +205,75 @@ const cardHTML = `
 </script>
 </body>
 </html>
+<script>
+    // 1. HÀM KIỂM TRA NGƯỜI DÙNG (ÉP HIỂN THỊ TÊN VÀ TIỀN)
+    function checkUser() {
+        const loggedUser = localStorage.getItem("currentUser");
+        const userHeader = document.getElementById("userHeader");
+
+        if (loggedUser && loggedUser !== "" && userHeader) {
+            // Lấy số dư, nếu không có thì mặc định là 0
+            let balance = localStorage.getItem("balance_" + loggedUser) || "0";
+            
+            // ÉP HIỂN THỊ TÊN VÀ TIỀN (Xóa sạch chữ Đăng nhập cũ)
+            userHeader.innerHTML = `
+                <span style="color:#e11d48; font-weight:bold;">👤 ${loggedUser}</span> | 
+                <span style="color:#22c55e; font-weight:bold;">💰 ${parseInt(balance).toLocaleString()}đ</span> | 
+                <a href="javascript:void(0)" onclick="logout()" style="color:#666; font-size:12px; text-decoration:none;">[Thoát]</a>
+            `;
+        }
+    }
+
+    // 2. HÀM ĐĂNG XUẤT
+    function logout() {
+        if(confirm("Bạn có chắc chắn muốn thoát tài khoản không?")) {
+            localStorage.removeItem("currentUser");
+            window.location.reload(); 
+        }
+    }
+
+    // 3. HÀM LOAD SẢN PHẨM (DỰA TRÊN CODE TRƯỚC ĐÓ CỦA BẠN)
+    function loadProducts() {
+        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        const categories = ["50", "150", "250", "500", "2000"];
+        
+        categories.forEach(id => {
+            const el = document.getElementById("container-" + id);
+            if(el) el.innerHTML = "";
+        });
+
+        listAcc.forEach(acc => {
+            const cardHTML = `
+                <div class="card">
+                    <img src="${acc.img}" onerror="this.src='anh1.jpg'">
+                    <div class="card-body" style="padding:10px;">
+                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
+                        <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+                        <div class="discount-tag" style="font-size:13px; background:#f43f5e; color:white; padding:5px 10px; display:inline-block; border-radius:6px; font-weight:bold; margin:8px 0;">
+                            ${parseInt(acc.price).toLocaleString()}đ
+                        </div>
+                        <button class="btn-xem" style="width:100%; margin-top:10px; padding:10px; font-size:14px; font-weight:bold; background:#3b82f6; color:white; border:none; border-radius:8px;" onclick="handleView()">XEM NGAY</button>
+                    </div>
+                </div>
+            `;
+            const target = document.getElementById("container-" + acc.cat);
+            if (target) target.innerHTML += cardHTML;
+        });
+    }
+
+    function handleView() {
+        const loggedUser = localStorage.getItem("currentUser");
+        if (!loggedUser) {
+            alert("Vui lòng đăng nhập để xem chi tiết!");
+            window.location.href = 'login.html';
+        } else {
+            window.location.href = 'chitiet.html';
+        }
+    }
+
+    // 4. LỆNH QUAN TRỌNG: CHẠY NGAY KHI VÀO TRANG
+    window.addEventListener('DOMContentLoaded', () => {
+        checkUser();
+        loadProducts();
+    });
+</script>
