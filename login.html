@@ -3,57 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký & Đăng nhập - SHOP THAIPP</title>
+    <title>Đăng nhập - SHOP THAIPP</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .auth-container { max-width: 400px; margin: 40px auto; padding: 10px; }
+        body { background: #f1f5f9; }
+        .auth-container { max-width: 400px; margin: 80px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #e11d48; margin-bottom: 25px; }
         .auth-form input {
             width: 100%; padding: 12px; margin: 10px 0;
             border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px;
         }
         .btn-auth {
             width: 100%; background: #e11d48; color: white; border: none;
-            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px;
+            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px;
         }
         .status-msg { 
             display: none; background: #dcfce7; color: #166534; 
             padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 15px; 
         }
-        .switch-auth { text-align: center; margin-top: 20px; font-size: 15px; }
-        .switch-auth a { color: #2563eb; text-decoration: underline; font-weight: bold; cursor: pointer; }
+        .switch-auth { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
+        .switch-auth a { color: #2563eb; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">★ SHOP THAIPP ★</div>
-    <div class="user"><a href="index.html">Quay lại trang chủ</a></div>
-</header>
-
 <div class="auth-container">
-    <div class="card">
-        <div id="statusMsg" class="status-msg"></div>
+    <div id="statusMsg" class="status-msg"></div>
 
-        <div id="loginForm">
-            <h2 style="text-align: center;">ĐĂNG NHẬP</h2>
-            <div class="auth-form">
-                <input type="text" id="userLogin" placeholder="Tên tài khoản">
-                <input type="password" id="passLogin" placeholder="Mật khẩu">
-                <button class="btn-auth" onclick="handleAuth('login')">ĐĂNG NHẬP</button>
-            </div>
-            <div class="switch-auth">Bạn mới biết shop? <a onclick="toggleForm(true)">Đăng ký tài khoản</a></div>
+    <div id="loginForm">
+        <h2>ĐĂNG NHẬP</h2>
+        <div class="auth-form">
+            <input type="text" id="userLogin" placeholder="Tên tài khoản">
+            <input type="password" id="passLogin" placeholder="Mật khẩu">
+            <button class="btn-auth" onclick="handleAuth('login')">VÀO CỬA HÀNG</button>
         </div>
+        <div class="switch-auth">Chưa có tài khoản? <a onclick="toggleForm(true)">Đăng ký ngay</a></div>
+    </div>
 
-        <div id="registerForm" style="display: none;">
-            <h2 style="text-align: center;">ĐĂNG KÝ</h2>
-            <div class="auth-form">
-                <input type="text" id="userReg" placeholder="Tên tài khoản mới">
-                <input type="password" id="passReg" placeholder="Mật khẩu">
-                <input type="password" id="passRegConfirm" placeholder="Nhập lại mật khẩu">
-                <button class="btn-auth" style="background: #22c55e;" onclick="handleAuth('register')">TẠO TÀI KHOẢN</button>
-            </div>
-            <div class="switch-auth">Đã có nick? <a onclick="toggleForm(false)">Đăng nhập ngay</a></div>
+    <div id="registerForm" style="display: none;">
+        <h2>ĐĂNG KÝ</h2>
+        <div class="auth-form">
+            <input type="text" id="userReg" placeholder="Tên tài khoản mới">
+            <input type="password" id="passReg" placeholder="Mật khẩu">
+            <input type="password" id="passRegConfirm" placeholder="Xác nhận mật khẩu">
+            <button class="btn-auth" onclick="handleAuth('register')" style="background: #22c55e;">TẠO TÀI KHOẢN</button>
         </div>
+        <div class="switch-auth">Đã có tài khoản? <a onclick="toggleForm(false)">Đăng nhập ngay</a></div>
     </div>
 </div>
 
@@ -61,36 +56,44 @@
     function toggleForm(isReg) {
         document.getElementById('loginForm').style.display = isReg ? 'none' : 'block';
         document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
+        document.getElementById('statusMsg').style.display = 'none';
     }
 
     function handleAuth(type) {
-        let user = "";
         const msgBox = document.getElementById('statusMsg');
+        let user = "";
+        let pass = "";
 
         if (type === 'login') {
             user = document.getElementById('userLogin').value.trim();
-            if (!user) { alert("Vui lòng nhập tên!"); return; }
+            pass = document.getElementById('passLogin').value.trim();
+            if (!user || !pass) { alert("Vui lòng nhập đủ tài khoản và mật khẩu!"); return; }
         } else {
             user = document.getElementById('userReg').value.trim();
-            let p1 = document.getElementById('passReg').value;
-            let p2 = document.getElementById('passRegConfirm').value;
+            pass = document.getElementById('passReg').value;
+            let passConfirm = document.getElementById('passRegConfirm').value;
 
-            if (!user || !p1) { alert("Thiếu thông tin đăng ký!"); return; }
-            if (p1 !== p2) { alert("Mật khẩu không khớp!"); return; }
+            if (!user || !pass) { alert("Vui lòng không để trống thông tin!"); return; }
+            if (pass !== passConfirm) { alert("Mật khẩu xác nhận không khớp!"); return; }
         }
 
-        // Lưu tên user vào bộ nhớ máy
+        // LƯU TRẠNG THÁI ĐĂNG NHẬP
         localStorage.setItem("currentUser", user);
         
-        // Hiển thị thông báo đẹp
-        msgBox.innerText = (type === 'login' ? "Đang vào hệ thống..." : "Tạo tài khoản thành công!");
+        // Khởi tạo tiền nếu là người dùng mới
+        if (!localStorage.getItem("balance_" + user)) {
+            localStorage.setItem("balance_" + user, "0");
+        }
+
+        // Thông báo và chuyển hướng
+        msgBox.innerText = (type === 'login' ? "Đang đăng nhập..." : "Đăng ký thành công!");
         msgBox.style.display = 'block';
 
-        // Chuyển hướng về trang chủ
         setTimeout(() => {
             window.location.href = "index.html";
-        }, 1200);
+        }, 1000);
     }
 </script>
+
 </body>
-</html>
+                </html>
