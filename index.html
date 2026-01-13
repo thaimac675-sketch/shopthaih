@@ -3,343 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Liên Quân - THAIPP Professional</title>
+    <title>Shop Liên Quân - THAIPP</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* CSS Thanh Bộ Lọc Chuyên Nghiệp */
-        .filter-section {
-            background: #fff;
-            padding: 15px 10px;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .filter-title {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .filter-buttons {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 5px;
-            scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
-        }
-        .filter-buttons::-webkit-scrollbar { display: none; } /* Ẩn thanh cuộn trên Chrome */
-
-        .filter-btn {
-            white-space: nowrap;
-            padding: 8px 16px;
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .filter-btn.active {
-            background: #e11d48;
-            color: white;
-            border-color: #e11d48;
-        }
-
-        /* Giữ nguyên Grid 2 cột */
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 10px;
-        }
-        .cat-title {
-            font-size: 16px;
-            color: #e11d48;
-            margin: 20px 10px 5px 10px;
-            font-weight: bold;
-        }
-        .discount-tag {
-            font-size: 13px !important;
-            background: #f43f5e !important;
-            color: white !important;
-            padding: 5px 10px !important;
-            display: inline-block !important;
-            border-radius: 6px !important;
-            font-weight: bold !important;
-            margin: 8px 0 !important;
-        }
-        .modal-overlay-small {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none; justify-content: center; align-items: center;
-            z-index: 9999;
-        }
-        .modal-box-small {
-            background: white; padding: 20px; border-radius: 10px;
-            width: 80%; max-width: 300px; text-align: center;
-        }
+        .filter-section { background: #fff; padding: 15px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #ddd; }
+        .filter-buttons { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { white-space: nowrap; padding: 8px 16px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
+        .filter-btn.active { background: #e11d48; color: white; border-color: #e11d48; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
+        .card img { width: 100%; height: 130px; object-fit: cover; }
+        .price-tag { background: #f43f5e; color: white; padding: 5px 10px; border-radius: 6px; font-weight: bold; display: inline-block; margin: 8px 0; }
     </style>
 </head>
 <body>
-    
-<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: white; border-bottom: 2px solid #e11d48;">
-    <div class="logo" style="color: #e11d48; font-weight: bold; font-size: 18px;">★ SHOP THAIPP ★</div>
-    
-    <div id="userHeader" class="user">
-        <a href="login.html" style="text-decoration: none; color: #2563eb; font-weight: bold; font-size: 14px;">Đăng nhập</a>
+
+<header style="display: flex; justify-content: space-between; padding: 10px; background: white; border-bottom: 2px solid #e11d48;">
+    <div class="logo">★ SHOP THAIPP ★</div>
+    <div id="userHeader">
+        <a href="login.html">Đăng nhập</a> | <a href="naptien.html">Nạp tiền</a>
     </div>
 </header>
 
 <div class="filter-section">
-    <div class="filter-title">🔍 TÌM THEO GIÁ:</div>
     <div class="filter-buttons">
         <button class="filter-btn active" onclick="filterPrice('all', this)">Tất cả</button>
         <button class="filter-btn" onclick="filterPrice(50, this)">Dưới 50k</button>
         <button class="filter-btn" onclick="filterPrice(150, this)">Dưới 150k</button>
-        <button class="filter-btn" onclick="filterPrice(250, this)">Dưới 250k</button>
         <button class="filter-btn" onclick="filterPrice(500, this)">Dưới 500k</button>
         <button class="filter-btn" onclick="filterPrice(2000, this)">Dưới 2M</button>
     </div>
 </div>
 
 <section id="main-content">
-    <div id="section-2000">
-        <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 2M</h2>
-        <div id="container-2000" class="grid-layout"></div>
-    </div>
-
-    <div id="section-500">
-        <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 500K</h2>
-        <div id="container-500" class="grid-layout"></div>
-    </div>
-
-    <div id="section-250">
-        <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 250K</h2>
-        <div id="container-250" class="grid-layout"></div>
-    </div>
-
-    <div id="section-150">
-        <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 150K</h2>
-        <div id="container-150" class="grid-layout"></div>
-    </div>
-
-    <div id="section-50">
-        <h2 class="cat-title">★ ACC LIÊN QUÂN DƯỚI 50K</h2>
-        <div id="container-50" class="grid-layout"></div>
-    </div>
+    <div id="section-2000" class="cat-group"><h2 style="margin-left:10px;">★ ACC DƯỚI 2M</h2><div id="container-2000" class="grid-layout"></div></div>
+    <div id="section-500" class="cat-group"><h2 style="margin-left:10px;">★ ACC DƯỚI 500K</h2><div id="container-500" class="grid-layout"></div></div>
+    <div id="section-150" class="cat-group"><h2 style="margin-left:10px;">★ ACC DƯỚI 150K</h2><div id="container-150" class="grid-layout"></div></div>
+    <div id="section-50" class="cat-group"><h2 style="margin-left:10px;">★ ACC DƯỚI 50K</h2><div id="container-50" class="grid-layout"></div></div>
 </section>
 
-<div id="customModal" class="modal-overlay-small">
-    <div class="modal-box-small">
-        <h3 id="modalTitle" style="color:#e11d48; margin-top:0;">THÔNG BÁO</h3>
-        <p id="modalMessage" style="font-size:14px; color:#333;"></p>
-        <div style="display:flex; gap:10px; justify-content:center;">
-            <button onclick="closeModal()" style="padding:8px 15px; border-radius:5px; border:1px solid #ddd;">Đóng</button>
-            <button id="modalAction" style="display:none; background:#e11d48; color:white; border:none; padding:8px 15px; border-radius:5px;">Đăng nhập</button>
-        </div>
-    </div>
-</div>
-
 <script>
-    // 1. HÀM HIỆN TÀI KHOẢN VÀ TIỀN (FIX TRIỆT ĐỂ)
     function updateHeader() {
         const user = localStorage.getItem("currentUser");
-        const headerDiv = document.getElementById("userHeader");
-
-        if (user && headerDiv) {
+        const header = document.getElementById("userHeader");
+        if (user && header) {
             const money = localStorage.getItem("balance_" + user) || "0";
-            headerDiv.innerHTML = `
-                <div style="text-align: right; background: #fff1f2; padding: 8px 12px; border-radius: 10px; border: 1px solid #fecdd3; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-                    <div style="color: #e11d48; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: flex-end; gap: 5px;">
-                        <span>👤</span> ${user}
-                    </div>
-                    <div style="color: #16a34a; font-weight: bold; font-size: 15px;">
-                        💰 ${parseInt(money).toLocaleString()}đ
-                    </div>
-                    <a href="javascript:void(0)" onclick="logout()" style="font-size: 11px; color: #94a3b8; text-decoration: none; margin-top: 4px; display: block;">[Đăng xuất]</a>
-                </div>
-            `;
+            header.innerHTML = `<b style="color:#e11d48;">${user}</b> | <b style="color:#16a34a;">${parseInt(money).toLocaleString()}đ</b> | <a href="#" onclick="logout()">Thoát</a>`;
         }
     }
 
-    function logout() {
-        if(confirm("Bạn muốn đăng xuất chứ?")) {
-            localStorage.removeItem("currentUser");
-            window.location.reload();
-        }
-    }
+    function logout() { localStorage.removeItem("currentUser"); location.reload(); }
 
-    // 2. HÀM BỘ LỌC GIÁ
-    function filterPrice(maxPrice, btn) {
+    function filterPrice(max, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const categories = ["50", "150", "250", "500", "2000"];
-        categories.forEach(cat => {
-            const section = document.getElementById("section-" + cat);
-            if (section) {
-                section.style.display = (maxPrice === 'all' || parseInt(cat) === maxPrice) ? "block" : "none";
-            }
+        const groups = ["50", "150", "500", "2000"];
+        groups.forEach(g => {
+            document.getElementById("section-" + g).style.display = (max === 'all' || parseInt(g) === max) ? "block" : "none";
         });
     }
 
-    // 3. HÀM TẢI ACC & FIX LỖI ẢNH (OBJECT-FIT COVER)
     function loadProducts() {
-        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        const categories = ["50", "150", "250", "500", "2000"];
-        
-        categories.forEach(id => {
-            const el = document.getElementById("container-" + id);
-            if(el) el.innerHTML = "";
-        });
-
-        listAcc.forEach(acc => {
-// Sửa lại cách tạo Card Acc trong hàm loadProducts
-listAcc.forEach(acc => {
-    const cardHTML = `
-        <div class="card">
-            <img src="${acc.img}" onerror="this.src='anh1.jpg'" style="width:100%; height:140px; object-fit:cover;">
-            <div class="card-body">
-                <h3 style="font-size:13px;">${acc.title}</h3>
-                <p style="font-size:11px;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                <div class="price-tag" style="background:#f43f5e; color:white; padding:5px; border-radius:5px; font-weight:bold;">
-                    ${parseInt(acc.price).toLocaleString()}đ
-                </div>
-                <button class="btn-xem" onclick="handleView(${acc.id})" style="width:100%; margin-top:10px; cursor:pointer;">XEM NGAY</button>
-            </div>
-        </div>
-    `;
-    const target = document.getElementById("container-" + acc.cat);
-    if (target) target.innerHTML += cardHTML;
-});
-
-// Sửa lại hàm handleView để lưu Acc đang chọn
-function handleView(accId) {
-    if (!localStorage.getItem("currentUser")) {
-        alert("Vui lòng đăng nhập!");
-        window.location.href = 'login.html';
-        return;
-    }
-    // Tìm Acc trong danh sách bằng ID và lưu vào bộ nhớ tạm
-    const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-    const selectedAcc = listAcc.find(a => a.id == accId);
-    
-    if (selectedAcc) {
-        localStorage.setItem("viewingAcc", JSON.stringify(selectedAcc));
-        window.location.href = 'chitiet.html';
-    }
-    }
-
-    // TỰ ĐỘNG CHẠY KHI VÀO TRANG
-    window.onload = function() {
-        updateHeader();
-        loadProducts();
-    };
-</script>
-</body>
-</html>
-                </div>
-            `;
-            const target = document.getElementById("container-" + acc.cat);
-            if (target) target.innerHTML += cardHTML;
-        });
-    }
-
-    function handleView() {
-        if (!localStorage.getItem("currentUser")) {
-            alert("Bạn cần đăng nhập để xem chi tiết!");
-            window.location.href = 'login.html';
-        } else {
-            window.location.href = 'chitiet.html';
-        }
-    }
-
-    // TỰ ĐỘNG CHẠY KHI TRANG LOAD XONG
-    window.addEventListener('DOMContentLoaded', () => {
-        updateHeader();
-        loadProducts();
-    });
-</script>
-</body>
-</html>
-<script>
-<script>
-    // 1. ÉP HIỂN THỊ TÀI KHOẢN NGAY KHI LOAD
-    function checkUser() {
-        const loggedUser = localStorage.getItem("currentUser");
-        const userHeader = document.getElementById("userHeader");
-        
-        console.log("User hiện tại:", loggedUser); // Dòng này để kiểm tra lỗi
-
-        if (loggedUser && userHeader) {
-            let balance = localStorage.getItem("balance_" + loggedUser) || "0";
-            
-            // Thay thế toàn bộ nội dung trong div userHeader
-            userHeader.innerHTML = `
-                <div style="display: flex; flex-direction: column; align-items: flex-end; font-size: 13px;">
-                    <span style="color: #e11d48; font-weight: bold;">👤 ${loggedUser}</span>
-                    <span style="color: #22c55e; font-weight: bold;">💰 ${parseInt(balance).toLocaleString()}đ</span>
-                    <a href="javascript:void(0)" onclick="logout()" style="color: #64748b; font-size: 11px; text-decoration: underline;">[Thoát]</a>
-                </div>
-            `;
-        }
-    }
-
-    // 2. HÀM ĐĂNG XUẤT SẠCH SẼ
-    function logout() {
-        if(confirm("Bạn muốn thoát tài khoản?")) {
-            localStorage.removeItem("currentUser");
-            window.location.href = "index.html";
-        }
-    }
-
-    // 3. HÀM LOAD ACC (GIỮ NGUYÊN LOGIC CŨ NHƯNG TỐI ƯU)
-    function loadProducts() {
-        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        const categories = ["50", "150", "250", "500", "2000"];
-        
-        categories.forEach(id => {
-            const el = document.getElementById("container-" + id);
-            if(el) el.innerHTML = "";
-        });
-
-        listAcc.forEach(acc => {
-            const cardHTML = `
-                <div class="card">
+        const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        ["50", "150", "500", "2000"].forEach(id => document.getElementById("container-" + id).innerHTML = "");
+        list.forEach(acc => {
+            const html = `
+                <div class="card" style="border:1px solid #ddd; border-radius:10px; overflow:hidden;">
                     <img src="${acc.img}" onerror="this.src='anh1.jpg'">
-                    <div class="card-body" style="padding:10px;">
-                        <h3 style="font-size:13px; margin:5px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${acc.title}</h3>
+                    <div style="padding:10px;">
+                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
                         <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div style="background:#f43f5e; color:white; padding:5px 10px; border-radius:6px; font-weight:bold; display:inline-block; margin-top:5px; font-size:13px;">
-                            ${parseInt(acc.price).toLocaleString()}đ
-                        </div>
-                        <button class="btn-xem" style="width:100%; margin-top:10px; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold;" onclick="handleView()">XEM NGAY</button>
+                        <div class="price-tag">${parseInt(acc.price).toLocaleString()}đ</div>
+                        <button onclick="goDetail('${acc.id}')" style="width:100%; padding:8px; background:#3b82f6; color:white; border:none; border-radius:5px; font-weight:bold;">XEM NGAY</button>
                     </div>
-                </div>
-            `;
+                </div>`;
             const target = document.getElementById("container-" + acc.cat);
-            if (target) target.innerHTML += cardHTML;
+            if(target) target.innerHTML += html;
         });
     }
 
-    function handleView() {
-        if (!localStorage.getItem("currentUser")) {
-            alert("Bạn cần đăng nhập để xem chi tiết!");
-            window.location.href = 'login.html';
-        } else {
-            window.location.href = 'chitiet.html';
+    function goDetail(id) {
+        const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        const found = list.find(a => a.id == id);
+        if(found) {
+            localStorage.setItem("viewingAcc", JSON.stringify(found));
+            window.location.href = "chitiet.html";
         }
     }
 
-    // LỆNH KÍCH HOẠT TỔNG THỂ
-    window.onload = function() {
-        checkUser();
-        loadProducts();
-    };
+    window.onload = () => { updateHeader(); loadProducts(); };
 </script>
+</body>
+            </html>
