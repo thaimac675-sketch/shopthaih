@@ -4,96 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - SHOP THAIPP</title>
-    <link rel="stylesheet" href="style.css">
     <style>
-        body { background: #f1f5f9; }
-        .auth-container { max-width: 400px; margin: 80px auto; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #e11d48; margin-bottom: 25px; }
-        .auth-form input {
-            width: 100%; padding: 12px; margin: 10px 0;
-            border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px;
-        }
-        .btn-auth {
-            width: 100%; background: #e11d48; color: white; border: none;
-            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px;
-        }
-        .status-msg { 
-            display: none; background: #dcfce7; color: #166534; 
-            padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 15px; 
-        }
-        .switch-auth { text-align: center; margin-top: 20px; font-size: 14px; color: #64748b; }
-        .switch-auth a { color: #2563eb; cursor: pointer; font-weight: bold; }
+        body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h2 { text-align: center; color: #e11d48; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #be123c; }
+        .switch { text-align: center; margin-top: 15px; font-size: 14px; color: #64748b; }
+        .switch b { color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="auth-container">
-    <div id="statusMsg" class="status-msg"></div>
-
-    <div id="loginForm">
+<div class="login-card">
+    <div id="box-login">
         <h2>ĐĂNG NHẬP</h2>
-        <div class="auth-form">
-            <input type="text" id="userLogin" placeholder="Tên tài khoản">
-            <input type="password" id="passLogin" placeholder="Mật khẩu">
-            <button class="btn-auth" onclick="handleAuth('login')">VÀO CỬA HÀNG</button>
-        </div>
-        <div class="switch-auth">Chưa có tài khoản? <a onclick="toggleForm(true)">Đăng ký ngay</a></div>
+        <input type="text" id="u-login" placeholder="Tên tài khoản">
+        <input type="password" id="p-login" placeholder="Mật khẩu">
+        <button onclick="doLogin()">VÀO CỬA HÀNG</button>
+        <div class="switch">Chưa có nick? <b onclick="toggle()">Đăng ký ngay</b></div>
     </div>
 
-    <div id="registerForm" style="display: none;">
+    <div id="box-reg" style="display:none">
         <h2>ĐĂNG KÝ</h2>
-        <div class="auth-form">
-            <input type="text" id="userReg" placeholder="Tên tài khoản mới">
-            <input type="password" id="passReg" placeholder="Mật khẩu">
-            <input type="password" id="passRegConfirm" placeholder="Xác nhận mật khẩu">
-            <button class="btn-auth" onclick="handleAuth('register')" style="background: #22c55e;">TẠO TÀI KHOẢN</button>
-        </div>
-        <div class="switch-auth">Đã có tài khoản? <a onclick="toggleForm(false)">Đăng nhập ngay</a></div>
+        <input type="text" id="u-reg" placeholder="Tên tài khoản mới">
+        <input type="password" id="p-reg" placeholder="Mật khẩu">
+        <button onclick="doReg()" style="background:#22c55e">TẠO TÀI KHOẢN</button>
+        <div class="switch">Đã có nick? <b onclick="toggle()">Đăng nhập ngay</b></div>
     </div>
 </div>
 
 <script>
-    function toggleForm(isReg) {
-        document.getElementById('loginForm').style.display = isReg ? 'none' : 'block';
-        document.getElementById('registerForm').style.display = isReg ? 'block' : 'none';
-        document.getElementById('statusMsg').style.display = 'none';
+    function toggle() {
+        const isReg = document.getElementById('box-reg').style.display === 'none';
+        document.getElementById('box-login').style.display = isReg ? 'none' : 'block';
+        document.getElementById('box-reg').style.display = isReg ? 'block' : 'none';
     }
 
-    function handleAuth(type) {
-        const msgBox = document.getElementById('statusMsg');
-        let user = "";
-        let pass = "";
+    // Hàm xử lý đăng nhập
+    function doLogin() {
+        const u = document.getElementById('u-login').value.trim();
+        const p = document.getElementById('p-login').value.trim();
 
-        if (type === 'login') {
-            user = document.getElementById('userLogin').value.trim();
-            pass = document.getElementById('passLogin').value.trim();
-            if (!user || !pass) { alert("Vui lòng nhập đủ tài khoản và mật khẩu!"); return; }
-        } else {
-            user = document.getElementById('userReg').value.trim();
-            pass = document.getElementById('passReg').value;
-            let passConfirm = document.getElementById('passRegConfirm').value;
+        if(!u || !p) return alert("Vui lòng nhập đủ!");
 
-            if (!user || !pass) { alert("Vui lòng không để trống thông tin!"); return; }
-            if (pass !== passConfirm) { alert("Mật khẩu xác nhận không khớp!"); return; }
-        }
-
-        // LƯU TRẠNG THÁI ĐĂNG NHẬP
-        localStorage.setItem("currentUser", user);
+        // Xóa dữ liệu cũ để tránh kẹt
+        localStorage.removeItem("currentUser");
         
-        // Khởi tạo tiền nếu là người dùng mới
-        if (!localStorage.getItem("balance_" + user)) {
-            localStorage.setItem("balance_" + user, "0");
+        // Lưu người dùng mới
+        localStorage.setItem("currentUser", u);
+        if(!localStorage.getItem("balance_" + u)) {
+            localStorage.setItem("balance_" + u, "0");
         }
 
-        // Thông báo và chuyển hướng
-        msgBox.innerText = (type === 'login' ? "Đang đăng nhập..." : "Đăng ký thành công!");
-        msgBox.style.display = 'block';
+        alert("Đăng nhập thành công! Đang chuyển hướng...");
+        
+        // Dùng lệnh này để ép trình duyệt quay lại trang chủ dù file nằm ở đâu
+        window.location.replace("index.html");
+    }
 
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1000);
+    // Hàm xử lý đăng ký
+    function doReg() {
+        const u = document.getElementById('u-reg').value.trim();
+        const p = document.getElementById('p-reg').value.trim();
+
+        if(!u || !p) return alert("Vui lòng nhập đủ!");
+
+        localStorage.setItem("currentUser", u);
+        localStorage.setItem("balance_" + u, "0");
+
+        alert("Đăng ký thành công!");
+        window.location.replace("index.html");
     }
 </script>
 
 </body>
-                </html>
+</html>
