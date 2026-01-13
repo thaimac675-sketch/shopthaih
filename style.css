@@ -57,10 +57,10 @@ nav button {
 }
 .card img {
     width: 100%;
-    height: 140px; /* Độ cao cố định cho khung ảnh */
-    object-fit: cover; /* Quan trọng: Giúp ảnh không bị méo, tự căn giữa đẹp */
+    height: 150px; /* Độ cao cố định cho tất cả ảnh */
+    object-fit: cover; /* Giúp ảnh luôn đẹp, không bị méo */
     display: block;
-    border-bottom: 1px solid #eee;
+    border-bottom: 2px solid #f1f5f9;
 }
 .card-body {
     padding: 10px;
