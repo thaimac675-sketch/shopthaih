@@ -6,78 +6,57 @@
     <title>Đăng nhập - SHOP THAIPP</title>
     <style>
         body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .login-card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h2 { text-align: center; color: #e11d48; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        button:hover { background: #be123c; }
-        .switch { text-align: center; margin-top: 15px; font-size: 14px; color: #64748b; }
-        .switch b { color: #2563eb; cursor: pointer; }
+        .card { background: white; padding: 30px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
+        h2 { color: #e11d48; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        .switch { margin-top: 15px; font-size: 14px; color: #64748b; }
+        b { color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
-
-<div class="login-card">
-    <div id="box-login">
-        <h2>ĐĂNG NHẬP</h2>
-        <input type="text" id="u-login" placeholder="Tên tài khoản">
-        <input type="password" id="p-login" placeholder="Mật khẩu">
-        <button onclick="doLogin()">VÀO CỬA HÀNG</button>
-        <div class="switch">Chưa có nick? <b onclick="toggle()">Đăng ký ngay</b></div>
+    <div class="card">
+        <div id="login-box">
+            <h2>ĐĂNG NHẬP</h2>
+            <input type="text" id="u-login" placeholder="Tên tài khoản">
+            <input type="password" id="p-login" placeholder="Mật khẩu">
+            <button onclick="handleLogin()">VÀO SHOP</button>
+            <div class="switch">Chưa có nick? <b onclick="toggle()">Đăng ký ngay</b></div>
+        </div>
+        <div id="reg-box" style="display:none">
+            <h2>ĐĂNG KÝ</h2>
+            <input type="text" id="u-reg" placeholder="Tên tài khoản mới">
+            <input type="password" id="p-reg" placeholder="Mật khẩu">
+            <button onclick="handleReg()" style="background:#22c55e">TẠO NICK</button>
+            <div class="switch">Đã có nick? <b onclick="toggle()">Đăng nhập ngay</b></div>
+        </div>
     </div>
 
-    <div id="box-reg" style="display:none">
-        <h2>ĐĂNG KÝ</h2>
-        <input type="text" id="u-reg" placeholder="Tên tài khoản mới">
-        <input type="password" id="p-reg" placeholder="Mật khẩu">
-        <button onclick="doReg()" style="background:#22c55e">TẠO TÀI KHOẢN</button>
-        <div class="switch">Đã có nick? <b onclick="toggle()">Đăng nhập ngay</b></div>
-    </div>
-</div>
-
-<script>
-    function toggle() {
-        const isReg = document.getElementById('box-reg').style.display === 'none';
-        document.getElementById('box-login').style.display = isReg ? 'none' : 'block';
-        document.getElementById('box-reg').style.display = isReg ? 'block' : 'none';
-    }
-
-    // Hàm xử lý đăng nhập
-    function doLogin() {
-        const u = document.getElementById('u-login').value.trim();
-        const p = document.getElementById('p-login').value.trim();
-
-        if(!u || !p) return alert("Vui lòng nhập đủ!");
-
-        // Xóa dữ liệu cũ để tránh kẹt
-        localStorage.removeItem("currentUser");
-        
-        // Lưu người dùng mới
-        localStorage.setItem("currentUser", u);
-        if(!localStorage.getItem("balance_" + u)) {
-            localStorage.setItem("balance_" + u, "0");
+    <script>
+        function toggle() {
+            const login = document.getElementById('login-box');
+            const reg = document.getElementById('reg-box');
+            login.style.display = login.style.display === 'none' ? 'block' : 'none';
+            reg.style.display = reg.style.display === 'none' ? 'block' : 'none';
         }
 
-        alert("Đăng nhập thành công! Đang chuyển hướng...");
-        
-        // Dùng lệnh này để ép trình duyệt quay lại trang chủ dù file nằm ở đâu
-        window.location.replace("index.html");
-    }
+        function handleLogin() {
+            const u = document.getElementById('u-login').value.trim();
+            if(!u) return alert("Nhập tên tài khoản!");
+            localStorage.setItem("currentUser", u);
+            if(!localStorage.getItem("balance_" + u)) localStorage.setItem("balance_" + u, "0");
+            alert("Đăng nhập thành công!");
+            window.location.href = "index.html";
+        }
 
-    // Hàm xử lý đăng ký
-    function doReg() {
-        const u = document.getElementById('u-reg').value.trim();
-        const p = document.getElementById('p-reg').value.trim();
-
-        if(!u || !p) return alert("Vui lòng nhập đủ!");
-
-        localStorage.setItem("currentUser", u);
-        localStorage.setItem("balance_" + u, "0");
-
-        alert("Đăng ký thành công!");
-        window.location.replace("index.html");
-    }
-</script>
-
+        function handleReg() {
+            const u = document.getElementById('u-reg').value.trim();
+            if(!u) return alert("Nhập tên muốn tạo!");
+            localStorage.setItem("currentUser", u);
+            localStorage.setItem("balance_" + u, "0");
+            alert("Đăng ký thành công!");
+            window.location.href = "index.html";
+        }
+    </script>
 </body>
 </html>
