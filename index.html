@@ -88,11 +88,12 @@
     </style>
 </head>
 <body>
-
-<header>
-    <div class="logo">★ SHOP THAIPP ★</div>
+    
+<header style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: white; border-bottom: 2px solid #e11d48;">
+    <div class="logo" style="color: #e11d48; font-weight: bold; font-size: 18px;">★ SHOP THAIPP ★</div>
+    
     <div id="userHeader" class="user">
-        <a href="login.html">Đăng nhập</a> | <a href="naptien.html">Nạp tiền</a>
+        <a href="login.html" style="text-decoration: none; color: #2563eb; font-weight: bold; font-size: 14px;">Đăng nhập</a>
     </div>
 </header>
 
@@ -206,33 +207,37 @@ const cardHTML = `
 </body>
 </html>
 <script>
-    // 1. HÀM KIỂM TRA NGƯỜI DÙNG (ÉP HIỂN THỊ TÊN VÀ TIỀN)
+<script>
+    // 1. ÉP HIỂN THỊ TÀI KHOẢN NGAY KHI LOAD
     function checkUser() {
         const loggedUser = localStorage.getItem("currentUser");
         const userHeader = document.getElementById("userHeader");
+        
+        console.log("User hiện tại:", loggedUser); // Dòng này để kiểm tra lỗi
 
-        if (loggedUser && loggedUser !== "" && userHeader) {
-            // Lấy số dư, nếu không có thì mặc định là 0
+        if (loggedUser && userHeader) {
             let balance = localStorage.getItem("balance_" + loggedUser) || "0";
             
-            // ÉP HIỂN THỊ TÊN VÀ TIỀN (Xóa sạch chữ Đăng nhập cũ)
+            // Thay thế toàn bộ nội dung trong div userHeader
             userHeader.innerHTML = `
-                <span style="color:#e11d48; font-weight:bold;">👤 ${loggedUser}</span> | 
-                <span style="color:#22c55e; font-weight:bold;">💰 ${parseInt(balance).toLocaleString()}đ</span> | 
-                <a href="javascript:void(0)" onclick="logout()" style="color:#666; font-size:12px; text-decoration:none;">[Thoát]</a>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; font-size: 13px;">
+                    <span style="color: #e11d48; font-weight: bold;">👤 ${loggedUser}</span>
+                    <span style="color: #22c55e; font-weight: bold;">💰 ${parseInt(balance).toLocaleString()}đ</span>
+                    <a href="javascript:void(0)" onclick="logout()" style="color: #64748b; font-size: 11px; text-decoration: underline;">[Thoát]</a>
+                </div>
             `;
         }
     }
 
-    // 2. HÀM ĐĂNG XUẤT
+    // 2. HÀM ĐĂNG XUẤT SẠCH SẼ
     function logout() {
-        if(confirm("Bạn có chắc chắn muốn thoát tài khoản không?")) {
+        if(confirm("Bạn muốn thoát tài khoản?")) {
             localStorage.removeItem("currentUser");
-            window.location.reload(); 
+            window.location.href = "index.html";
         }
     }
 
-    // 3. HÀM LOAD SẢN PHẨM (DỰA TRÊN CODE TRƯỚC ĐÓ CỦA BẠN)
+    // 3. HÀM LOAD ACC (GIỮ NGUYÊN LOGIC CŨ NHƯNG TỐI ƯU)
     function loadProducts() {
         const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
         const categories = ["50", "150", "250", "500", "2000"];
@@ -247,12 +252,12 @@ const cardHTML = `
                 <div class="card">
                     <img src="${acc.img}" onerror="this.src='anh1.jpg'">
                     <div class="card-body" style="padding:10px;">
-                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
+                        <h3 style="font-size:13px; margin:5px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${acc.title}</h3>
                         <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div class="discount-tag" style="font-size:13px; background:#f43f5e; color:white; padding:5px 10px; display:inline-block; border-radius:6px; font-weight:bold; margin:8px 0;">
+                        <div style="background:#f43f5e; color:white; padding:5px 10px; border-radius:6px; font-weight:bold; display:inline-block; margin-top:5px; font-size:13px;">
                             ${parseInt(acc.price).toLocaleString()}đ
                         </div>
-                        <button class="btn-xem" style="width:100%; margin-top:10px; padding:10px; font-size:14px; font-weight:bold; background:#3b82f6; color:white; border:none; border-radius:8px;" onclick="handleView()">XEM NGAY</button>
+                        <button class="btn-xem" style="width:100%; margin-top:10px; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold;" onclick="handleView()">XEM NGAY</button>
                     </div>
                 </div>
             `;
@@ -262,18 +267,17 @@ const cardHTML = `
     }
 
     function handleView() {
-        const loggedUser = localStorage.getItem("currentUser");
-        if (!loggedUser) {
-            alert("Vui lòng đăng nhập để xem chi tiết!");
+        if (!localStorage.getItem("currentUser")) {
+            alert("Bạn cần đăng nhập để xem chi tiết!");
             window.location.href = 'login.html';
         } else {
             window.location.href = 'chitiet.html';
         }
     }
 
-    // 4. LỆNH QUAN TRỌNG: CHẠY NGAY KHI VÀO TRANG
-    window.addEventListener('DOMContentLoaded', () => {
+    // LỆNH KÍCH HOẠT TỔNG THỂ
+    window.onload = function() {
         checkUser();
         loadProducts();
-    });
+    };
 </script>
