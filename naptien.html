@@ -3,132 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nạp Thẻ Cào - THAIPP</title>
+    <title>Nạp Tiền - THAIPP</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
         body { font-family: sans-serif; background: #f1f5f9; padding: 15px; margin: 0; }
-        .container { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         h2 { color: #e11d48; text-align: center; margin-top: 0; }
-        label { font-size: 13px; font-weight: bold; color: #475569; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-send { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        .history { margin-top: 30px; border-top: 2px dashed #ddd; padding-top: 20px; }
+        label { font-size: 13px; font-weight: bold; color: #475569; display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-send { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .card-log { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; font-size: 13px; }
-        .status-0 { color: orange; font-weight: bold; } /* Chờ xử lý */
-        .status-1 { color: green; font-weight: bold; }  /* Thành công */
-        .status-2 { color: red; font-weight: bold; }    /* Thất bại */
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>💳 NẠP THẺ CÀO</h2>
-    
     <label>Loại thẻ:</label>
     <select id="telco">
         <option value="VIETTEL">Viettel</option>
         <option value="VINAPHONE">Vinaphone</option>
         <option value="MOBIFONE">Mobifone</option>
     </select>
-
     <label>Mệnh giá:</label>
     <select id="amount">
         <option value="10000">10,000đ</option>
-        <option value="20000">20,000đ</option>
         <option value="50000">50,000đ</option>
         <option value="100000">100,000đ</option>
-        <option value="200000">200,000đ</option>
         <option value="500000">500,000đ</option>
     </select>
+    <input type="text" id="serial" placeholder="Số Serial">
+    <input type="text" id="pin" placeholder="Mã thẻ (PIN)">
+    <button class="btn-send" onclick="sendCard()">GỬI THẺ NGAY</button>
 
-    <label>Số Serial:</label>
-    <input type="text" id="serial" placeholder="Nhập số serial trên thẻ">
-
-    <label>Mã thẻ (PIN):</label>
-    <input type="text" id="pin" placeholder="Nhập mã thẻ sau lớp cào">
-
-    <button class="btn-send" onclick="handleSend()">GỬI THẺ DUYỆT</button>
-
-    <div class="history">
-        <h3 style="font-size:16px;">📜 LỊCH SỬ NẠP THẺ</h3>
-        <div id="history-content"></div>
+    <div style="margin-top:20px;">
+        <h3>📜 TRẠNG THÁI THẺ</h3>
+        <div id="card-history"></div>
     </div>
-
-    <p style="text-align:center; margin-top:20px;">
-        <a href="index.html" style="text-decoration:none; color:#64748b; font-size:14px;">← Quay lại trang chủ</a>
-    </p>
+    <p style="text-align:center;"><a href="index.html" style="color:gray; text-decoration:none;">← Quay lại</a></p>
 </div>
 
 <script>
-    const currentUser = localStorage.getItem("currentUser");
+    const firebaseConfig = {
+        apiKey: "AIzaSyC75Af-i4AXLH6X...",
+        authDomain: "shopthai-ea4c1.firebaseapp.com",
+        databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+        projectId: "shopthai-ea4c1",
+        storageBucket: "shopthai-ea4c1.appspot.com",
+        messagingSenderId: "114276793671",
+        appId: "1:114276793671:web:0b257c70c675ef715f7d23"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const user = localStorage.getItem("currentUser");
 
-    function handleSend() {
-        if(!currentUser) {
-            alert("Bạn cần đăng nhập để nạp thẻ!");
-            window.location.href = "login.html";
-            return;
-        }
-
-        const telco = document.getElementById('telco').value;
-        const amount = document.getElementById('amount').value;
-        const serial = document.getElementById('serial').value.trim();
-        const pin = document.getElementById('pin').value.trim();
-
-        if(!serial || !pin) {
-            alert("Vui lòng nhập đầy đủ Serial và Mã thẻ!");
-            return;
-        }
-
-        const cardData = {
-            id: Date.now(),
-            user: currentUser,
-            telco: telco,
-            amount: amount,
-            serial: serial,
-            pin: pin,
-            status: 0, // 0: Chờ xử lý, 1: Thành công, 2: Thất bại
-            time: new Date().toLocaleString()
+    function sendCard() {
+        if(!user) return alert("Vui lòng đăng nhập!");
+        const data = {
+            id: Date.now(), user: user,
+            telco: document.getElementById('telco').value,
+            amount: document.getElementById('amount').value,
+            serial: document.getElementById('serial').value,
+            pin: document.getElementById('pin').value,
+            status: 0, time: new Date().toLocaleString()
         };
-
-        // Lưu vào danh sách tổng để Admin thấy
-        let allCards = JSON.parse(localStorage.getItem("all_cards") || "[]");
-        allCards.push(cardData);
-        localStorage.setItem("all_cards", JSON.stringify(allCards));
-
-        alert("Gửi thẻ thành công! Vui lòng đợi Admin kiểm tra.");
-        location.reload();
-    }
-
-    function loadHistory() {
-        if(!currentUser) {
-            document.getElementById('history-content').innerHTML = "<p style='color:gray'>Vui lòng đăng nhập để xem lịch sử.</p>";
-            return;
-        }
-
-        const allCards = JSON.parse(localStorage.getItem("all_cards") || "[]");
-        const myCards = allCards.filter(c => c.user === currentUser);
-        const container = document.getElementById('history-content');
-
-        if(myCards.length === 0) {
-            container.innerHTML = "<p style='color:gray'>Bạn chưa có yêu cầu nạp thẻ nào.</p>";
-            return;
-        }
-
-        myCards.reverse().forEach(c => {
-            let statusText = "";
-            if(c.status === 0) statusText = '<span class="status-0">Đang chờ duyệt...</span>';
-            else if(c.status === 1) statusText = '<span class="status-1">Thành công ✅</span>';
-            else statusText = '<span class="status-2">Thẻ lỗi/Sai mã ❌</span>';
-
-            container.innerHTML += `
-                <div class="card-log">
-                    <b>${c.telco} - ${parseInt(c.amount).toLocaleString()}đ</b><br>
-                    <small>${c.time}</small><br>
-                    Trạng thái: ${statusText}
-                </div>`;
+        db.ref('all_cards/' + data.id).set(data).then(() => {
+            alert("Đã gửi thẻ! Chờ Admin duyệt.");
+            location.reload();
         });
     }
 
-    window.onload = loadHistory;
+    if(user) {
+        db.ref('all_cards').on('value', (s) => {
+            const cards = s.val();
+            const list = document.getElementById('card-history');
+            list.innerHTML = "";
+            for(let id in cards) {
+                if(cards[id].user === user) {
+                    let st = cards[id].status == 0 ? "⏳ Chờ duyệt" : (cards[id].status == 1 ? "✅ Thành công" : "❌ Thẻ sai");
+                    list.innerHTML += `<div class="card-log"><b>${cards[id].telco} ${parseInt(cards[id].amount).toLocaleString()}đ</b><br>${st}</div>`;
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
