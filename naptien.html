@@ -3,48 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nạp Tiền - THAIPP</title>
+    <title>Nạp Tiền - SHOP THAIPP</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; margin: 0; }
-        .container { max-width: 450px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h2 { color: #e11d48; text-align: center; margin-top: 0; }
-        label { font-size: 13px; font-weight: bold; color: #475569; display: block; margin-top: 10px; }
-        input, select { width: 100%; padding: 12px; margin: 5px 0 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn-send { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .card-log { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; font-size: 13px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f1f5f9; margin: 0; padding: 15px; }
+        .container { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #e11d48; text-align: center; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        label { font-size: 13px; font-weight: bold; color: #475569; display: block; margin-top: 15px; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        input:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
+        .btn-send { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; transition: 0.3s; }
+        .btn-send:hover { background: #be123c; }
+        .history-title { font-size: 16px; margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; font-weight: bold; color: #1e293b; }
+        .card-log { background: #f8fafc; padding: 12px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #e2e8f0; font-size: 13px; }
+        .status-0 { color: #f59e0b; font-weight: bold; }
+        .status-1 { color: #16a34a; font-weight: bold; }
+        .status-2 { color: #dc2626; font-weight: bold; }
+        .back-btn { display: block; text-align: center; margin-top: 20px; color: #64748b; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>💳 NẠP THẺ CÀO</h2>
+    <h2>💳 Nạp Thẻ Cào</h2>
+    
     <label>Loại thẻ:</label>
     <select id="telco">
         <option value="VIETTEL">Viettel</option>
         <option value="VINAPHONE">Vinaphone</option>
         <option value="MOBIFONE">Mobifone</option>
+        <option value="ZING">Thẻ Zing</option>
     </select>
+
     <label>Mệnh giá:</label>
     <select id="amount">
         <option value="10000">10,000đ</option>
+        <option value="20000">20,000đ</option>
         <option value="50000">50,000đ</option>
         <option value="100000">100,000đ</option>
+        <option value="200000">200,000đ</option>
         <option value="500000">500,000đ</option>
     </select>
-    <input type="text" id="serial" placeholder="Số Serial">
-    <input type="text" id="pin" placeholder="Mã thẻ (PIN)">
-    <button class="btn-send" onclick="sendCard()">GỬI THẺ NGAY</button>
 
-    <div style="margin-top:20px;">
-        <h3>📜 TRẠNG THÁI THẺ</h3>
-        <div id="card-history"></div>
-    </div>
-    <p style="text-align:center;"><a href="index.html" style="color:gray; text-decoration:none;">← Quay lại</a></p>
+    <label>Số Serial:</label>
+    <input type="text" id="serial" placeholder="Nhập mã serial">
+
+    <label>Mã thẻ (PIN):</label>
+    <input type="text" id="pin" placeholder="Nhập mã pin">
+
+    <button class="btn-send" onclick="sendCard()">GỬI THẺ DUYỆT</button>
+
+    <div class="history-title">📜 Trạng thái thẻ vừa gửi</div>
+    <div id="card-history"></div>
+
+    <a href="index.html" class="back-btn">← Quay lại cửa hàng</a>
 </div>
 
 <script>
+    // Config Firebase từ shopthai-ea4c1
     const firebaseConfig = {
         apiKey: "AIzaSyC75Af-i4AXLH6X...",
         authDomain: "shopthai-ea4c1.firebaseapp.com",
@@ -59,18 +77,23 @@
     const user = localStorage.getItem("currentUser");
 
     function sendCard() {
-        if(!user) return alert("Vui lòng đăng nhập!");
+        if(!user) return alert("Vui lòng đăng nhập để nạp thẻ!");
+        const ser = document.getElementById('serial').value.trim();
+        const pin = document.getElementById('pin').value.trim();
+        if(!ser || !pin) return alert("Vui lòng nhập đầy đủ Serial và Mã thẻ!");
+
+        const id = Date.now();
         const data = {
-            id: Date.now(), user: user,
+            id: id, user: user,
             telco: document.getElementById('telco').value,
             amount: document.getElementById('amount').value,
-            serial: document.getElementById('serial').value,
-            pin: document.getElementById('pin').value,
+            serial: ser, pin: pin,
             status: 0, time: new Date().toLocaleString()
         };
-        db.ref('all_cards/' + data.id).set(data).then(() => {
-            alert("Đã gửi thẻ! Chờ Admin duyệt.");
-            location.reload();
+        db.ref('all_cards/' + id).set(data).then(() => {
+            alert("Đã gửi thẻ thành công! Vui lòng chờ Admin duyệt.");
+            document.getElementById('serial').value = "";
+            document.getElementById('pin').value = "";
         });
     }
 
@@ -79,17 +102,20 @@
             const cards = s.val();
             const list = document.getElementById('card-history');
             list.innerHTML = "";
+            let count = 0;
             for(let id in cards) {
                 if(cards[id].user === user) {
-                    let st = cards[id].status == 0 ? "⏳ Chờ duyệt" : (cards[id].status == 1 ? "✅ Thành công" : "❌ Thẻ sai");
-                    list.innerHTML += `<div class="card-log"><b>${cards[id].telco} ${parseInt(cards[id].amount).toLocaleString()}đ</b><br>${st}</div>`;
+                    count++;
+                    let stText = cards[id].status == 0 ? '<span class="status-0">Chờ duyệt</span>' : (cards[id].status == 1 ? '<span class="status-1">Thành công</span>' : '<span class="status-2">Thẻ lỗi</span>');
+                    list.innerHTML += `<div class="card-log">
+                        <b>${cards[id].telco} - ${parseInt(cards[id].amount).toLocaleString()}đ</b><br>
+                        <small>${cards[id].time}</small><br>Trạng thái: ${stText}
+                    </div>`;
                 }
             }
+            if(count == 0) list.innerHTML = "<p style='color:gray; font-size:12px;'>Chưa có lịch sử nạp.</p>";
         });
     }
 </script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-<script src="script.js"></script>
 </body>
 </html>
