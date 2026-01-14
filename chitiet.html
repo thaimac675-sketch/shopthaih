@@ -1,26 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Chi Tiết Acc</title>
+    <meta charset="UTF-8"><title>Chi Tiết</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f1f5f9; }
+        body { font-family: sans-serif; padding: 15px; background: #f1f5f9; text-align: center; }
         .box { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; }
-        .price { color: #e11d48; font-size: 24px; font-weight: bold; }
-        .info { display: flex; justify-content: space-around; background: #f8fafc; padding: 15px; border-radius: 10px; margin: 20px 0; }
+        .price { color: #e11d48; font-size: 24px; font-weight: bold; margin: 15px 0; }
+        .btn-buy { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="box">
-        <h2 id="t">Đang tải...</h2>
-        <img id="i" style="width:100%; border-radius:10px;">
-        <div class="price" id="p">0đ</div>
-        <div class="info">
-            <div><b>Tướng</b><br><span id="tg">0</span></div>
-            <div><b>Skin</b><br><span id="sk">0</span></div>
+        <h2 id="t"></h2>
+        <img id="i" style="width: 100%; border-radius: 10px;">
+        <div class="price" id="p"></div>
+        <div style="display: flex; justify-content: space-around; margin: 15px 0;">
+            <div>Tướng: <b id="tg"></b></div>
+            <div>Skin: <b id="sk"></b></div>
         </div>
-        <button onclick="buy()" style="width:100%; padding:15px; background:#22c55e; color:white; border:none; border-radius:10px; font-weight:bold; font-size:18px;">MUA NGAY</button>
-        <p style="text-align:center;"><a href="index.html">Quay lại trang chủ</a></p>
+        <button class="btn-buy" onclick="buy()">MUA NGAY</button>
+        <p><a href="index.html">Quay lại</a></p>
     </div>
+
     <script>
         const acc = JSON.parse(localStorage.getItem("viewingAcc"));
         if(acc) {
@@ -29,37 +30,32 @@
             document.getElementById('p').innerText = parseInt(acc.price).toLocaleString() + "đ";
             document.getElementById('tg').innerText = acc.tuong;
             document.getElementById('sk').innerText = acc.skin;
+        }
 
         function buy() {
-    const user = localStorage.getItem("currentUser");
-    if(!user) { alert("Vui lòng đăng nhập!"); return; }
+            const user = localStorage.getItem("currentUser");
+            if(!user) return alert("Vui lòng đăng nhập!");
+            
+            let balance = parseInt(localStorage.getItem("balance_" + user) || "0");
+            let price = parseInt(acc.price);
 
-    let balance = parseInt(localStorage.getItem("balance_" + user) || "0");
-    let price = parseInt(acc.price);
-
-    if (balance < price) {
-        alert("❌ BẠN KHÔNG ĐỦ TIỀN! Vui lòng nạp thêm để mua Acc này.");
-    } else {
-        // 1. Thông báo thành công
-        alert("✅ GIAO DỊCH THÀNH CÔNG! Bạn có thể xem tài khoản tại Lịch Sử Mua.");
-
-        // 2. Trừ tiền người dùng
-        localStorage.setItem("balance_" + user, balance - price);
-
-        // 3. Lưu vào Lịch Sử Mua Acc
-        let history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
-        const buyDate = new Date().toLocaleString(); // Lấy ngày giờ mua
-        history.push({ ...acc, date: buyDate });
-        localStorage.setItem("history_" + user, JSON.stringify(history));
-
-        // 4. XÓA ACC KHỎI SHOP
-        let listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        listAcc = listAcc.filter(item => item.id != acc.id); // Lọc bỏ Acc vừa mua
-        localStorage.setItem("shop_accs", JSON.stringify(listAcc));
-
-        // 5. Chuyển hướng về trang lịch sử
-        window.location.href = "lichsu.html";
-    }
+            if (balance < price) {
+                alert("❌ BẠN CẦN NẠP THÊM TIỀN ĐỂ MUA ACC NÀY!");
+            } else {
+                alert("✅ GIAO DỊCH THÀNH CÔNG! Hãy xem lịch sử để lấy TK/MK.");
+                // Trừ tiền
+                localStorage.setItem("balance_" + user, balance - price);
+                // Lưu lịch sử
+                let history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
+                history.push({ ...acc, buyTime: new Date().toLocaleString() });
+                localStorage.setItem("history_" + user, JSON.stringify(history));
+                // Xóa Acc khỏi shop
+                let shopAccs = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+                shopAccs = shopAccs.filter(item => item.id != acc.id);
+                localStorage.setItem("shop_accs", JSON.stringify(shopAccs));
+                
+                window.location.href = "lichsu.html";
+            }
         }
     </script>
 </body>
