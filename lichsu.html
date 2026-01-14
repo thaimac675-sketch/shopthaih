@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Sử Mua Acc - THAIPP</title>
+    <meta charset="UTF-8"><title>Lịch Sử Mua</title>
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; }
-        .item-buy { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #22c55e; }
-        .acc-info { background: #f8fafc; padding: 10px; border-radius: 5px; margin-top: 10px; color: #1e293b; font-family: monospace; }
-        .date { font-size: 12px; color: #64748b; }
+        body { font-family: sans-serif; padding: 15px; background: #f1f5f9; }
+        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #22c55e; }
+        .info { background: #eee; padding: 10px; margin-top: 10px; font-family: monospace; }
     </style>
 </head>
 <body>
     <h2>📜 LỊCH SỬ MUA ACC</h2>
-    <div id="history-list"></div>
-    <br>
-    <a href="index.html">← Quay về Shop</a>
+    <div id="list"></div>
+    <a href="index.html">Về trang chủ</a>
 
     <script>
         const user = localStorage.getItem("currentUser");
-        const list = JSON.parse(localStorage.getItem("history_" + user) || "[]");
-        const container = document.getElementById("history-list");
+        const history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
+        const container = document.getElementById("list");
 
-        if(list.length === 0) {
-            container.innerHTML = "<p>Bạn chưa mua Acc nào!</p>";
+        if(history.length === 0) {
+            container.innerHTML = "Bạn chưa mua acc nào.";
         } else {
-            list.reverse().forEach(item => {
+            history.reverse().forEach(item => {
                 container.innerHTML += `
-                    <div class="item-buy">
-                        <b>${item.title}</b> <span class="date">(${item.date})</span>
-                        <div class="acc-info">
-                            TÀI KHOẢN: <span style="color:red">${item.tk}</span><br>
+                    <div class="card">
+                        <b>${item.title}</b> <br> <small>${item.buyTime}</small>
+                        <div class="info">
+                            TÀI KHOẢN: <span style="color:red">${item.tk}</span> <br>
                             MẬT KHẨU: <span style="color:red">${item.mk}</span>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
     </script>
