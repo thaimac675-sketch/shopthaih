@@ -1,74 +1,58 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Đăng nhập & Đăng ký</title>
+    <meta charset="UTF-8"><title>Đăng nhập - SHOP THAIPP</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
         body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
         input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .error { color: #e11d48; font-size: 12px; margin-bottom: 10px; display: none; }
-        b { color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="card">
-        <div id="form-box">
-            <h2 id="title">ĐĂNG NHẬP</h2>
-            <div id="err-msg" class="error"></div>
-            <input type="text" id="u" placeholder="Tài khoản (ít nhất 6 ký tự)">
-            <input type="password" id="p" placeholder="Mật khẩu (ít nhất 6 ký tự)">
-            <button id="btn-submit" onclick="handleSubmit()">VÀO SHOP</button>
-            <p id="switch">Chưa có nick? <b onclick="toggleMode()">Đăng ký ngay</b></p>
-        </div>
+        <h2 id="title">ĐĂNG KÝ</h2>
+        <div id="err-msg" class="error"></div>
+        <input type="text" id="u" placeholder="Tài khoản (ít nhất 6 ký tự)">
+        <input type="password" id="p" placeholder="Mật khẩu (ít nhất 6 ký tự)">
+        <button onclick="handleAuth()">THỰC HIỆN</button>
+        <p id="switch" style="cursor:pointer; color:blue; font-size:14px;" onclick="isLogin = !isLogin; document.getElementById('title').innerText = isLogin ? 'ĐĂNG NHẬP' : 'ĐĂNG KÝ'">Chuyển sang Đăng nhập/Đăng ký</p>
     </div>
 
     <script>
-        let isLogin = true;
-        function toggleMode() {
-            isLogin = !isLogin;
-            document.getElementById('title').innerText = isLogin ? "ĐĂNG NHẬP" : "ĐĂNG KÝ";
-            document.getElementById('btn-submit').innerText = isLogin ? "VÀO SHOP" : "TẠO TÀI KHOẢN";
-            document.getElementById('switch').innerHTML = isLogin ? 'Chưa có nick? <b onclick="toggleMode()">Đăng ký ngay</b>' : 'Đã có nick? <b onclick="toggleMode()">Đăng nhập ngay</b>';
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyC75Af-i4AXLH6...",
+            databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+            projectId: "shopthai-ea4c1"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let isLogin = false;
 
-        function handleSubmit() {
+        function handleAuth() {
             const u = document.getElementById('u').value.trim();
             const p = document.getElementById('p').value.trim();
-            const err = document.getElementById('err-msg');
-            
-            if(u.length < 6 || p.length < 6) {
-                err.innerText = "Tài khoản và mật khẩu phải từ 6 ký tự trở lên!";
-                err.style.display = "block";
-                return;
-            }
+            if (u.length < 6 || p.length < 6) return alert("Tối thiểu 6 ký tự!");
 
-            let users = JSON.parse(localStorage.getItem("all_users") || "[]");
-
-            if(isLogin) {
-                const found = users.find(user => user.username === u && user.password === p);
-                if(found) {
-                    localStorage.setItem("currentUser", u);
-                    window.location.href = "index.html";
+            db.ref('users/' + u).once('value', (s) => {
+                const user = s.val();
+                if (isLogin) {
+                    if (user && user.password === p) {
+                        localStorage.setItem("currentUser", u);
+                        window.location.href = "index.html";
+                    } else alert("Sai tài khoản hoặc mật khẩu!");
                 } else {
-                    err.innerText = "Sai tài khoản hoặc mật khẩu!";
-                    err.style.display = "block";
+                    if (user) alert("Tài khoản đã tồn tại!");
+                    else {
+                        db.ref('users/' + u).set({ password: p, balance: 0, date: new Date().toLocaleString() })
+                        .then(() => { alert("Đăng ký thành công!"); isLogin = true; });
+                    }
                 }
-            } else {
-                const exists = users.find(user => user.username === u);
-                if(exists) {
-                    err.innerText = "Tài khoản này đã được sử dụng!";
-                    err.style.display = "block";
-                } else {
-                    users.push({ username: u, password: p, date: new Date().toLocaleString() });
-                    localStorage.setItem("all_users", JSON.stringify(users));
-                    localStorage.setItem("currentUser", u);
-                    localStorage.setItem("balance_" + u, "0");
-                    alert("Đăng ký thành công!");
-                    window.location.href = "index.html";
-                }
-            }
+            });
         }
     </script>
 </body>
