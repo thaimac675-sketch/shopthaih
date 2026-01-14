@@ -1,61 +1,96 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Chi Tiết</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Acc - THAIPP</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 15px; background: #f1f5f9; text-align: center; }
-        .box { background: white; padding: 20px; border-radius: 15px; max-width: 500px; margin: auto; }
-        .price { color: #e11d48; font-size: 24px; font-weight: bold; margin: 15px 0; }
-        .btn-buy { width: 100%; padding: 15px; background: #22c55e; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; }
+        body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 15px; }
+        .container { max-width: 500px; margin: auto; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        img { width: 100%; height: 250px; object-fit: cover; }
+        .content { padding: 20px; }
+        .price { font-size: 24px; color: #e11d48; font-weight: bold; margin: 10px 0; }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .btn-buy { width: 100%; padding: 15px; background: #16a34a; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 20px; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2 id="t"></h2>
-        <img id="i" style="width: 100%; border-radius: 10px;">
-        <div class="price" id="p"></div>
-        <div style="display: flex; justify-content: space-around; margin: 15px 0;">
-            <div>Tướng: <b id="tg"></b></div>
-            <div>Skin: <b id="sk"></b></div>
+    <div class="container" id="detail-page">
         </div>
-        <button class="btn-buy" onclick="buy()">MUA NGAY</button>
-        <p><a href="index.html">Quay lại</a></p>
-    </div>
 
     <script>
-        const acc = JSON.parse(localStorage.getItem("viewingAcc"));
-        if(acc) {
-            document.getElementById('t').innerText = acc.title;
-            document.getElementById('i').src = acc.img;
-            document.getElementById('p').innerText = parseInt(acc.price).toLocaleString() + "đ";
-            document.getElementById('tg').innerText = acc.tuong;
-            document.getElementById('sk').innerText = acc.skin;
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyC75Af-i4AXLH6X...",
+            authDomain: "shopthai-ea4c1.firebaseapp.com",
+            databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+            projectId: "shopthai-ea4c1",
+            storageBucket: "shopthai-ea4c1.appspot.com",
+            messagingSenderId: "114276793671",
+            appId: "1:114276793671:web:0b257c70c675ef715f7d23"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        function buy() {
-            const user = localStorage.getItem("currentUser");
-            if(!user) return alert("Vui lòng đăng nhập!");
-            
-            let balance = parseInt(localStorage.getItem("balance_" + user) || "0");
-            let price = parseInt(acc.price);
+        const accId = localStorage.getItem("viewingAccId");
+        const currentUser = localStorage.getItem("currentUser");
 
-            if (balance < price) {
-                alert("❌ BẠN CẦN NẠP THÊM TIỀN ĐỂ MUA ACC NÀY!");
-            } else {
-                alert("✅ GIAO DỊCH THÀNH CÔNG! Hãy xem lịch sử để lấy TK/MK.");
-                // Trừ tiền
-                localStorage.setItem("balance_" + user, balance - price);
-                // Lưu lịch sử
-                let history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
-                history.push({ ...acc, buyTime: new Date().toLocaleString() });
-                localStorage.setItem("history_" + user, JSON.stringify(history));
-                // Xóa Acc khỏi shop
-                let shopAccs = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-                shopAccs = shopAccs.filter(item => item.id != acc.id);
-                localStorage.setItem("shop_accs", JSON.stringify(shopAccs));
-                
-                window.location.href = "lichsu.html";
+        if(!accId) window.location.href = "index.html";
+
+        // Tải thông tin Acc
+        db.ref('shop_accs/' + accId).on('value', (s) => {
+            const acc = s.val();
+            if(!acc) {
+                document.getElementById('detail-page').innerHTML = "<p style='padding:20px;'>Tài khoản này đã bán hoặc không tồn tại!</p>";
+                return;
             }
+            document.getElementById('detail-page').innerHTML = `
+                <img src="${acc.img}">
+                <div class="content">
+                    <h2>${acc.title}</h2>
+                    <div class="price">${parseInt(acc.price).toLocaleString()}đ</div>
+                    <div class="info-row"><span>Số tướng:</span> <b>${acc.tuong}</b></div>
+                    <div class="info-row"><span>Số trang phục:</span> <b>${acc.skin}</b></div>
+                    <div class="info-row"><span>Trạng thái:</span> <b style="color:green;">Đang bán</b></div>
+                    <button class="btn-buy" onclick="buyNow('${acc.id}', ${acc.price})">MUA NGAY</button>
+                    <p style="text-align:center;"><a href="index.html">Quay lại</a></p>
+                </div>`;
+        });
+
+        function buyNow(id, price) {
+            if(!currentUser) return alert("Bạn cần đăng nhập để mua!");
+            
+            db.ref('users/' + currentUser).once('value', (s) => {
+                const user = s.val();
+                if(!user || user.balance < price) return alert("Bạn không đủ tiền! Hãy nạp thêm.");
+
+                if(confirm("Xác nhận mua tài khoản này với giá " + price.toLocaleString() + "đ?")) {
+                    // 1. Trừ tiền
+                    const newBalance = user.balance - price;
+                    db.ref('users/' + currentUser + '/balance').set(newBalance);
+
+                    // 2. Lấy thông tin acc để lưu lịch sử trước khi xóa
+                    db.ref('shop_accs/' + id).once('value', (accSnap) => {
+                        const accData = accSnap.val();
+                        const historyItem = {
+                            title: accData.title,
+                            price: price,
+                            tk: accData.tk,
+                            mk: accData.mk,
+                            time: new Date().toLocaleString()
+                        };
+                        // Lưu lịch sử cho khách
+                        db.ref('history/' + currentUser).push(historyItem);
+
+                        // 3. Xóa Acc khỏi shop
+                        db.ref('shop_accs/' + id).remove().then(() => {
+                            alert("Mua thành công! Thông tin tài khoản đã nằm trong phần Lịch Sử.");
+                            window.location.href = "lichsu.html";
+                        });
+                    });
+                }
+            });
         }
     </script>
 </body>
