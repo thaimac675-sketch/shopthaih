@@ -1,37 +1,66 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Lịch Sử Mua</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Mua - THAIPP</title>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
-        body { font-family: sans-serif; padding: 15px; background: #f1f5f9; }
-        .card { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #22c55e; }
-        .info { background: #eee; padding: 10px; margin-top: 10px; font-family: monospace; }
+        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; }
+        .box { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; }
+        .item { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fff; }
+        .acc-box { background: #eee; padding: 10px; margin-top: 10px; border-radius: 5px; border: 1px dashed #e11d48; }
+        h2 { color: #e11d48; text-align: center; }
     </style>
 </head>
 <body>
-    <h2>📜 LỊCH SỬ MUA ACC</h2>
-    <div id="list"></div>
-    <a href="index.html">Về trang chủ</a>
 
-    <script>
-        const user = localStorage.getItem("currentUser");
-        const history = JSON.parse(localStorage.getItem("history_" + user) || "[]");
-        const container = document.getElementById("list");
+<div class="box">
+    <h2>🛒 ACC ĐÃ MUA</h2>
+    <div id="history-list">Đang tải lịch sử...</div>
+    <p style="text-align:center; margin-top:20px;"><a href="index.html" style="text-decoration:none; color:#2563eb;">← Quay lại Shop</a></p>
+</div>
 
-        if(history.length === 0) {
-            container.innerHTML = "Bạn chưa mua acc nào.";
-        } else {
-            history.reverse().forEach(item => {
-                container.innerHTML += `
-                    <div class="card">
-                        <b>${item.title}</b> <br> <small>${item.buyTime}</small>
-                        <div class="info">
-                            TÀI KHOẢN: <span style="color:red">${item.tk}</span> <br>
-                            MẬT KHẨU: <span style="color:red">${item.mk}</span>
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyC75Af-i4AXLH6X...",
+        authDomain: "shopthai-ea4c1.firebaseapp.com",
+        databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+        projectId: "shopthai-ea4c1",
+        storageBucket: "shopthai-ea4c1.appspot.com",
+        messagingSenderId: "114276793671",
+        appId: "1:114276793671:web:0b257c70c675ef715f7d23"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const user = localStorage.getItem("currentUser");
+
+    if(!user) {
+        document.getElementById('history-list').innerHTML = "Vui lòng đăng nhập!";
+    } else {
+        db.ref('history/' + user).on('value', (s) => {
+            const data = s.val();
+            const list = document.getElementById('history-list');
+            list.innerHTML = "";
+            if(!data) {
+                list.innerHTML = "Bạn chưa mua tài khoản nào.";
+                return;
+            }
+            for(let id in data) {
+                const item = data[id];
+                list.innerHTML += `
+                    <div class="item">
+                        <b>${item.title}</b> <small>(${item.time})</small><br>
+                        Giá: <span style="color:red;">${parseInt(item.price).toLocaleString()}đ</span>
+                        <div class="acc-box">
+                            TK: <b style="color:blue;">${item.tk}</b><br>
+                            MK: <b style="color:blue;">${item.mk}</b>
                         </div>
                     </div>`;
-            });
-        }
-    </script>
+            }
+        });
+    }
+</script>
 </body>
 </html>
