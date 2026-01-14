@@ -1,219 +1,24 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f1f5f9;
-    color: #333;
-}
+/* Giao diện tổng quát */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f1f5f9; margin: 0; padding: 0; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: white; border-bottom: 2px solid #e11d48; position: sticky; top: 0; z-index: 1000; }
+.logo { color: #e11d48; font-weight: bold; font-size: 18px; text-decoration: none; }
 
-header {
-    background: #fff;
-    padding: 15px;
-    text-align: center;
-    border-bottom: 2px solid #e11d48;
-}
+/* Grid danh sách Acc */
+.grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+.card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
+.card img { width: 100%; height: 120px; object-fit: cover; }
+.card-body { padding: 10px; }
+.price { color: #e11d48; font-weight: bold; font-size: 16px; margin: 5px 0; }
 
-header .logo {
-    color: #e11d48;
-    font-size: 20px;
-    font-weight: bold;
-}
+/* Nút bấm */
+button { cursor: pointer; border: none; border-radius: 6px; font-weight: bold; transition: 0.3s; }
+.btn-view { width: 100%; padding: 8px; background: #3b82f6; color: white; }
+.btn-buy { width: 100%; padding: 15px; background: #16a34a; color: white; font-size: 18px; }
+.btn-send { width: 100%; padding: 12px; background: #e11d48; color: white; }
 
-header .user a {
-    text-decoration: none;
-    color: #2563eb;
-    font-weight: bold;
-}
+/* Form nhập liệu (Login, Admin, Nạp tiền) */
+.box { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
 
-nav {
-    display: flex;
-    overflow-x: auto;
-    gap: 8px;
-    padding: 10px;
-    background: #fff;
-}
-
-nav button {
-    white-space: nowrap;
-    padding: 6px 12px;
-    border: 1px solid #ddd;
-    background: #f8fafc;
-    border-radius: 4px;
-}
-
-.products {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    padding: 10px;
-}
-
-.card {
-    background: #fff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    border: 1px solid #e2e8f0;
-    text-align: center;
-}
-.card img {
-    width: 100%;
-    height: 150px; /* Độ cao cố định cho tất cả ảnh */
-    object-fit: cover; /* Giúp ảnh luôn đẹp, không bị méo */
-    display: block;
-    border-bottom: 2px solid #f1f5f9;
-}
-.card-body {
-    padding: 10px;
-}
-
-.card h3 {
-    font-size: 13px;
-    margin: 5px 0;
-    font-weight: bold;
-}
-
-.highlight {
-    color: red;
-    font-weight: bold;
-}
-
-.discount-tag {
-    background: #ff4d4d;
-    color: white;
-    font-size: 9px;
-    padding: 3px 6px;
-    border-radius: 4px;
-    display: inline-block;
-    margin: 5px 0;
-}
-
-.card button {
-    width: 100%;
-    background: #38bdf8;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    font-weight: bold;
-}
-  /* Hộp thoại thông báo mới */
-.modal {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
-}
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    width: 80%;
-    max-width: 300px;
-}
-.modal-content button {
-    background: #38bdf8;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-top: 15px;
-}
-  /* Giao diện Modal chuyên nghiệp */
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    backdrop-filter: blur(4px); /* Làm mờ nền phía sau */
-}
-
-.modal-box {
-    background: #fff;
-    padding: 25px;
-    border-radius: 15px;
-    width: 85%;
-    max-width: 320px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-.modal-box h2 {
-    margin: 0 0 10px;
-    color: #e11d48;
-    font-size: 20px;
-}
-
-.modal-box p {
-    color: #666;
-    line-height: 1.5;
-    margin-bottom: 20px;
-}
-
-.modal-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-}
-
-.btn-close, .btn-action {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.btn-close { background: #eee; color: #333; }
-.btn-action { background: #e11d48; color: #white; }
-/* Ép tất cả lưới sản phẩm về cùng một định dạng */
-.grid-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Chia 2 cột đều nhau */
-    gap: 12px;
-    padding: 10px;
-}
-
-/* Chỉnh phần màu đỏ (giá tiền) to ra và đẹp hơn */
-.price-tag, .discount-tag {
-    background: #f43f5e !important;
-    color: white !important;
-    font-size: 13px !important; /* Làm chữ to ra */
-    font-weight: bold;
-    padding: 5px 10px !important; /* Làm khung to ra */
-    border-radius: 6px !important;
-    display: inline-block;
-    margin: 8px 0 !important;
-}
-
-/* Chỉnh nút bấm bên phải giống bên trái */
-.btn-xem {
-    width: 100%;
-    background: #3b82f6 !important; /* Màu xanh chuẩn */
-    color: white !important;
-    border: none !important;
-    padding: 10px !important; /* Tăng độ dày nút */
-    border-radius: 8px !important;
-    font-weight: bold !important;
-    font-size: 14px !important;
-    cursor: pointer;
-}
-
-/* Đảm bảo ảnh không làm méo card */
-.card img {
-    width: 100%;
-    height: 130px;
-    object-fit: cover;
-}
+/* Trạng thái thẻ cào */
+.card-log { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #cbd5e1; font-size: 13px; }
