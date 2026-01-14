@@ -4,116 +4,122 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shop Liên Quân - THAIPP</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
-        /* Giao diện Header & Filter */
+        body { font-family: sans-serif; margin: 0; background: #f1f5f9; }
         header { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: white; border-bottom: 2px solid #e11d48; position: sticky; top: 0; z-index: 1000; }
         .logo { color: #e11d48; font-weight: bold; font-size: 18px; }
-        .filter-section { background: #fff; padding: 15px 10px; border-bottom: 1px solid #ddd; }
-        .filter-buttons { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-btn { white-space: nowrap; padding: 8px 16px; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; }
-        .filter-btn.active { background: #e11d48; color: white; border-color: #e11d48; }
         
-        /* Giao diện Card sản phẩm */
-        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 10px; }
-        .card { background: white; border-radius: 12px; overflow: hidden; border: 1px solid #eee; transition: 0.3s; }
-        .card img { width: 100%; height: 130px; object-fit: cover; }
+        /* Bộ lọc giá */
+        .filter-section { background: white; padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 8px; overflow-x: auto; }
+        .filter-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid #ddd; background: #f8fafc; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .filter-btn.active { background: #e11d48; color: white; border-color: #e11d48; }
+
+        /* Danh sách Acc */
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; }
+        .card { background: white; border-radius: 10px; overflow: hidden; border: 1px solid #eee; position: relative; }
+        .card img { width: 100%; height: 120px; object-fit: cover; }
         .card-body { padding: 10px; }
-        .price-tag { background: #f43f5e; color: white; padding: 5px 10px; border-radius: 6px; font-weight: bold; display: inline-block; margin: 8px 0; font-size: 14px; }
+        .price { color: #e11d48; font-weight: bold; font-size: 16px; margin: 5px 0; }
+        .btn-view { width: 100%; padding: 8px; background: #3b82f6; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">★ THAIPP ★</div>
+    <div class="logo">★ SHOP THAIPP ★</div>
     <div id="userHeader">
-        <a href="login.html" style="text-decoration:none; color:#2563eb; font-weight:bold; font-size:14px;">Đăng nhập</a> | 
-        <a href="naptien.html" style="text-decoration:none; color:#16a34a; font-weight:bold; font-size:14px;">Nạp tiền</a>
+        <a href="login.html" style="text-decoration:none; color:#2563eb;">Đăng nhập</a> | 
+        <a href="naptien.html" style="text-decoration:none; color:#16a34a;">Nạp tiền</a>
     </div>
 </header>
 
 <div class="filter-section">
-    <div class="filter-buttons">
-        <button class="filter-btn active" onclick="filterPrice('all', this)">Tất cả</button>
-        <button class="filter-btn" onclick="filterPrice(50, this)">Dưới 50k</button>
-        <button class="filter-btn" onclick="filterPrice(150, this)">Dưới 150k</button>
-        <button class="filter-btn" onclick="filterPrice(500, this)">Dưới 500k</button>
-        <button class="filter-btn" onclick="filterPrice(2000, this)">Dưới 2M</button>
-    </div>
+    <button class="filter-btn active" onclick="filterPrice('all', this)">Tất cả</button>
+    <button class="filter-btn" onclick="filterPrice('50', this)">Dưới 50k</button>
+    <button class="filter-btn" onclick="filterPrice('150', this)">Dưới 150k</button>
+    <button class="filter-btn" onclick="filterPrice('500', this)">Dưới 500k</button>
+    <button class="filter-btn" onclick="filterPrice('2000', this)">Dưới 2M</button>
 </div>
 
 <main id="main-content">
-    <section id="section-2000"><h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC CAO CẤP 2M</h2><div id="container-2000" class="grid-layout"></div></section>
-    <section id="section-500"><h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC TRUNG CẤP 500K</h2><div id="container-500" class="grid-layout"></div></section>
-    <section id="section-150"><h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC GIÁ RẺ 150K</h2><div id="container-150" class="grid-layout"></div></section>
-    <section id="section-50"><h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC SƠ CẤP 50K</h2><div id="container-50" class="grid-layout"></div></section>
+    <section id="sec-2000"> <h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC CAO CẤP 2M</h2> <div id="container-2000" class="grid-layout"></div> </section>
+    <section id="sec-500"> <h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC TRUNG CẤP 500K</h2> <div id="container-500" class="grid-layout"></div> </section>
+    <section id="sec-150"> <h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC GIÁ RẺ 150K</h2> <div id="container-150" class="grid-layout"></div> </section>
+    <section id="sec-50"> <h2 style="padding:10px 15px; margin:0; font-size:16px;">★ ACC SƠ CẤP 50K</h2> <div id="container-50" class="grid-layout"></div> </section>
 </main>
 
 <script>
-    // 1. CẬP NHẬT HEADER (ĐĂNG NHẬP/TIỀN/NẠP TIỀN)
+    // 1. CẤU HÌNH FIREBASE (Dán mã của bạn vào đây)
+    const firebaseConfig = {
+        apiKey: "AIzaSyC75Af-i4AXLH6...",
+        databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+        projectId: "shopthai-ea4c1"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // 2. CẬP NHẬT HEADER & TIỀN
     function updateHeader() {
         const user = localStorage.getItem("currentUser");
-        const headerDiv = document.getElementById("userHeader");
         if (user) {
-            const money = localStorage.getItem("balance_" + user) || "0";
-            headerDiv.innerHTML = `
-                <div style="text-align: right;">
-                    <div style="font-weight:bold; color:#e11d48; font-size:14px;">👤 ${user}</div>
-                    <div style="font-weight:bold; color:#16a34a; font-size:14px;">💰 ${parseInt(money).toLocaleString()}đ</div>
-                    <div style="margin-top:4px; font-size:11px;">
-                        <a href="naptien.html" style="color:#16a34a; font-weight:bold;">[Nạp tiền]</a> | 
-                        <a href="lichsu.html" style="color:#2563eb; font-weight:bold;">[Lịch sử]</a> | 
-                        <a href="javascript:void(0)" onclick="logout()" style="color:#64748b;">[Thoát]</a>
-                    </div>
-                </div>`;
+            db.ref('users/' + user).on('value', (s) => {
+                const data = s.val() || { balance: 0 };
+                document.getElementById('userHeader').innerHTML = `
+                    <div style="text-align: right;">
+                        <b style="font-size:13px;">👤 ${user}</b> | <b style="color:#16a34a;">${data.balance.toLocaleString()}đ</b><br>
+                        <a href="naptien.html" style="font-size:11px; color:#16a34a; font-weight:bold;">[Nạp thẻ]</a> | 
+                        <a href="lichsu.html" style="font-size:11px; color:#2563eb; font-weight:bold;">[Lịch sử]</a> | 
+                        <a href="#" onclick="logout()" style="font-size:11px; color:gray;">[Thoát]</a>
+                    </div>`;
+            });
         }
     }
 
-    function logout() {
-        if(confirm("Bạn có muốn thoát không?")) {
-            localStorage.removeItem("currentUser");
-            location.reload();
-        }
-    }
+    function logout() { localStorage.clear(); location.reload(); }
 
-    // 2. BỘ LỌC GIÁ
-    function filterPrice(max, btn) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        const groups = ["50", "150", "500", "2000"];
-        groups.forEach(g => {
-            document.getElementById("section-" + g).style.display = (max === 'all' || parseInt(g) === max) ? "block" : "none";
+    // 3. TẢI SẢN PHẨM TỪ SERVER
+    function loadProducts() {
+        db.ref('shop_accs').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const categories = ["50", "150", "500", "2000"];
+            categories.forEach(id => document.getElementById("container-" + id).innerHTML = "");
+
+            if (!data) return;
+
+            for (let id in data) {
+                const acc = data[id];
+                const html = `
+                    <div class="card">
+                        <img src="${acc.img}" onerror="this.src='https://via.placeholder.com/150'">
+                        <div class="card-body">
+                            <h3 style="font-size:13px; margin:0;">${acc.title}</h3>
+                            <div class="price">${parseInt(acc.price).toLocaleString()}đ</div>
+                            <button class="btn-view" onclick="goDetail('${id}')">XEM CHI TIẾT</button>
+                        </div>
+                    </div>`;
+                const target = document.getElementById("container-" + acc.cat);
+                if (target) target.innerHTML += html;
+            }
         });
     }
 
-    // 3. TẢI DANH SÁCH ACC TỪ ADMIN
-    function loadProducts() {
-        const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        ["50", "150", "500", "2000"].forEach(id => document.getElementById("container-" + id).innerHTML = "");
-        
-        list.forEach(acc => {
-            const html = `
-                <div class="card">
-                    <img src="${acc.img}" onerror="this.src='anh1.jpg'">
-                    <div class="card-body">
-                        <h3 style="font-size:13px; margin:5px 0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${acc.title}</h3>
-                        <p style="font-size:11px; color:#666; margin:0;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div class="price-tag">${parseInt(acc.price).toLocaleString()}đ</div>
-                        <button onclick="goDetail('${acc.id}')" style="width:100%; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">XEM NGAY</button>
-                    </div>
-                </div>`;
-            const target = document.getElementById("container-" + acc.cat);
-            if(target) target.innerHTML += html;
+    // 4. BỘ LỌC GIÁ
+    function filterPrice(cat, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const ids = ["50", "150", "500", "2000"];
+        ids.forEach(id => {
+            document.getElementById("sec-" + id).style.display = (cat === 'all' || cat === id) ? "block" : "none";
         });
     }
 
     function goDetail(id) {
-        const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        const found = list.find(a => a.id == id);
-        if(found) {
-            localStorage.setItem("viewingAcc", JSON.stringify(found));
+        db.ref('shop_accs/' + id).once('value', (s) => {
+            localStorage.setItem("viewingAcc", JSON.stringify(s.val()));
             window.location.href = "chitiet.html";
-        }
+        });
     }
 
     window.onload = () => { updateHeader(); loadProducts(); };
