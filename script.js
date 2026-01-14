@@ -1,64 +1,68 @@
-function showModal(title, message, showAction = false) {
-    document.getElementById("modalTitle").innerText = title;
-    document.getElementById("modalMessage").innerText = message;
-    const actionBtn = document.getElementById("modalAction");
-    
-    if (showAction) {
-        actionBtn.style.display = "inline-block";
-        actionBtn.onclick = () => window.location.href = "login.html";
-    } else {
-        actionBtn.style.display = "none";
-    }
-    
-    document.getElementById("customModal").style.display = "flex";
-}
+// --- Cấu hình Firebase chuẩn của shopthai-ea4c1 ---
+const firebaseConfig = {
+    apiKey: "AIzaSyC75Af-i4AXLH6X...",
+    authDomain: "shopthai-ea4c1.firebaseapp.com",
+    databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+    projectId: "shopthai-ea4c1",
+    storageBucket: "shopthai-ea4c1.appspot.com",
+    messagingSenderId: "114276793671",
+    appId: "1:114276793671:web:0b257c70c675ef715f7d23"
+};
 
-function closeModal() {
-    document.getElementById("customModal").style.display = "none";
-}
+// Khởi tạo Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const currentUser = localStorage.getItem("currentUser");
 
-function buy() {
-    // Thay thế alert cũ bằng Modal chuyên nghiệp
-    showModal("THÔNG BÁO", "Vui lòng đăng nhập và nạp tiền để mua tài khoản này!", true);
-}
-
-function filter(type) {
-    let cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.style.display = (type === 'all' || card.classList.contains(type)) ? 'block' : 'none';
-    });
-}
-function handleView() {
-    const loggedUser = localStorage.getItem("currentUser");
-
-    if (!loggedUser) {
-        // Kiểm tra xem phần tử Modal có tồn tại không
-        const modal = document.getElementById("customModal");
-        if (modal) {
-            showModal("THÔNG BÁO", "Bạn vui lòng đăng nhập để xem chi tiết tài khoản này!", true);
-        } else {
-            // Nếu quên chưa dán HTML Modal thì hiện alert tạm thời
-            alert("Vui lòng đăng nhập để xem tài khoản!");
-            window.location.href = "login.html";
-        }
-    } else {
-        // Nếu đã có tài khoản, chuyển hướng ngay
-        window.location.href = "chitiet.html";
+// 1. Hàm hiển thị tiền và Header (Dùng cho index, lichsu, naptien)
+function updateHeaderUI() {
+    const userHeader = document.getElementById('userHeader');
+    if (userHeader && currentUser) {
+        db.ref('users/' + currentUser).on('value', (s) => {
+            const data = s.val() || { balance: 0 };
+            userHeader.innerHTML = `
+                <div style="text-align: right; font-size: 12px;">
+                    <b>👤 ${currentUser}</b> | <b style="color:green;">${data.balance.toLocaleString()}đ</b><br>
+                    <a href="lichsu.html" style="color:blue;">[Lịch sử]</a> | 
+                    <a href="#" onclick="logout()" style="color:gray;">[Thoát]</a>
+                </div>`;
+        });
     }
 }
 
-function showModal(title, message, showAction = false) {
-    document.getElementById("modalTitle").innerText = title;
-    document.getElementById("modalMessage").innerText = message;
-    const actionBtn = document.getElementById("modalAction");
-    if (showAction) {
-        actionBtn.style.display = "inline-block";
-        actionBtn.onclick = () => window.location.href = "login.html";
-    }
-    document.getElementById("customModal").style.display = "flex";
+function logout() { localStorage.clear(); location.reload(); }
+
+// 2. Hàm nạp thẻ (Dùng cho naptien.html)
+function sendCard() {
+    const telco = document.getElementById('telco').value;
+    const amount = document.getElementById('amount').value;
+    const serial = document.getElementById('serial').value.trim();
+    const pin = document.getElementById('pin').value.trim();
+
+    if (!serial || !pin) return alert("Vui lòng nhập đủ mã thẻ!");
+
+    const id = Date.now();
+    db.ref('all_cards/' + id).set({
+        id, user: currentUser, telco, amount, serial, pin, status: 0, time: new Date().toLocaleString()
+    }).then(() => alert("Gửi thẻ thành công! Chờ Admin duyệt."));
 }
 
-function closeModal() {
-    document.getElementById("customModal").style.display = "none";
+// 3. Hàm Đăng Acc (Dùng cho admin.html)
+function adminSaveAcc() {
+    const id = Date.now();
+    const data = {
+        id,
+        title: document.getElementById('t').value,
+        img: document.getElementById('img').value,
+        price: document.getElementById('pr').value,
+        cat: document.getElementById('cat').value,
+        tk: document.getElementById('tk_acc').value,
+        mk: document.getElementById('mk_acc').value
+    };
+    db.ref('shop_accs/' + id).set(data).then(() => alert("Đã đăng Acc thành công!"));
 }
 
+// Tự động chạy cập nhật Header khi load trang
+if (typeof firebase !== 'undefined') {
+    updateHeaderUI();
+}
