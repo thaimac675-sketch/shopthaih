@@ -79,3 +79,29 @@ function updateHeaderUI() {
         document.getElementById('userHeader').innerHTML = `<b>${currentUser}</b> | <b style="color:green;">${(data.balance || 0).toLocaleString()}đ</b>`;
     });
 }
+// Hàm lọc nhanh theo giá
+function filterByPrice() {
+    const selectedPrice = document.getElementById('filterPrice').value;
+    
+    // Danh sách các ID container tương ứng
+    const containers = ["50", "150", "500", "2000"];
+    
+    containers.forEach(cat => {
+        const element = document.getElementById('container-' + cat);
+        const title = element.previousElementSibling; // Lấy cái tiêu đề h2 phía trên
+        
+        if (selectedPrice === "all") {
+            // Hiện tất cả
+            element.style.display = "grid";
+            title.style.display = "flex";
+        } else if (selectedPrice === cat) {
+            // Chỉ hiện cái được chọn
+            element.style.display = "grid";
+            title.style.display = "flex";
+        } else {
+            // Ẩn các cái còn lại
+            element.style.display = "none";
+            title.style.display = "none";
+        }
+    });
+}
