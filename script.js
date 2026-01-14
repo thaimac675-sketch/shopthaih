@@ -1,4 +1,3 @@
-// 1. CẤU HÌNH FIREBASE CHUẨN (Lấy từ video của bạn)
 const firebaseConfig = {
   apiKey: "AIzaSyC75Af-i4AXLH6X...",
   authDomain: "shopthai-ea4c1.firebaseapp.com",
@@ -10,100 +9,73 @@ const firebaseConfig = {
   measurementId: "G-4SXB85FS4K"
 };
 
-// Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const currentUser = localStorage.getItem("currentUser");
 
-// 2. CHỨC NĂNG CHO TRANG CHỦ (INDEX.HTML)
+// --- TRANG CHỦ: Tải Acc theo từng khu vực ---
 function loadProducts() {
-    const list = document.getElementById('acc-list') || document.getElementById('acc-container');
-    if (!list) return;
-
     db.ref('shop_accs').on('value', (snapshot) => {
         const data = snapshot.val();
-        list.innerHTML = "";
+        const cats = ["50", "150", "500", "2000"];
+        cats.forEach(c => { if(document.getElementById('container-'+c)) document.getElementById('container-'+c).innerHTML = ""; });
+
         for (let id in data) {
             const acc = data[id];
-            list.innerHTML += `
+            const html = `
                 <div class="card">
                     <img src="${acc.img}" onerror="this.src='https://via.placeholder.com/150'">
                     <div class="card-body">
                         <h3 style="font-size:13px; margin:0;">${acc.title}</h3>
                         <div class="price">${parseInt(acc.price).toLocaleString()}đ</div>
-                        <button class="btn-view" onclick="goDetail('${id}')">XEM CHI TIẾT</button>
+                        <button class="btn-view" onclick="localStorage.setItem('viewingAccId','${id}'); window.location.href='chitiet.html'">XEM CHI TIẾT</button>
                     </div>
                 </div>`;
+            if(document.getElementById('container-' + acc.cat)) {
+                document.getElementById('container-' + acc.cat).innerHTML += html;
+            }
         }
     });
 }
 
-function goDetail(id) {
-    localStorage.setItem("viewingAccId", id);
-    window.location.href = "chitiet.html";
-}
-
-// 3. CHỨC NĂNG CHO TRANG ADMIN (ADMIN.HTML)
-function adminSaveAcc() {
-    const id = Date.now();
-    const data = {
-        id: id,
-        title: document.getElementById('t').value,
-        img: document.getElementById('img').value,
-        price: document.getElementById('pr').value,
-        cat: document.getElementById('cat').value,
-        tk: document.getElementById('tk_acc').value,
-        mk: document.getElementById('mk_acc').value,
-        tuong: document.getElementById('tg') ? document.getElementById('tg').value : 0,
-        skin: document.getElementById('sk') ? document.getElementById('sk').value : 0
-    };
-
-    if(!data.title || !data.price) return alert("Vui lòng nhập đủ tên và giá!");
-
-    db.ref('shop_accs/' + id).set(data).then(() => {
-        alert("Đã đăng Acc thành công lên Server!");
-        location.reload();
-    });
-}
-
-// 4. CHỨC NĂNG NẠP TIỀN (NAPTIEN.HTML)
-function sendCard() {
-    if (!currentUser) return alert("Vui lòng đăng nhập!");
-    const telco = document.getElementById('telco').value;
-    const amount = document.getElementById('amount').value;
-    const serial = document.getElementById('serial').value.trim();
-    const pin = document.getElementById('pin').value.trim();
-
-    if (!serial || !pin) return alert("Nhập đủ Serial và Mã thẻ!");
-
-    const id = Date.now();
-    db.ref('all_cards/' + id).set({
-        id, user: currentUser, telco, amount, serial, pin, status: 0, time: new Date().toLocaleString()
-    }).then(() => {
-        alert("Gửi thẻ thành công! Chờ Admin duyệt.");
-        location.reload();
-    });
-}
-
-// 5. CẬP NHẬT HEADER (HIỆN TÊN VÀ TIỀN)
-function updateHeaderUI() {
-    const userHeader = document.getElementById('userHeader');
-    if (userHeader && currentUser) {
-        db.ref('users/' + currentUser).on('value', (s) => {
-            const data = s.val() || { balance: 0 };
-            userHeader.innerHTML = `
-                <div style="text-align: right; font-size: 12px;">
-                    <b>👤 ${currentUser}</b> | <b style="color:green;">${(data.balance || 0).toLocaleString()}đ</b><br>
-                    <a href="naptien.html" style="color:green; font-weight:bold;">[Nạp]</a> | 
-                    <a href="lichsu.html" style="color:blue;">[Lịch sử]</a> | 
-                    <a href="#" onclick="localStorage.clear(); location.reload();" style="color:gray;">[Thoát]</a>
+// --- ADMIN: Duyệt thẻ cào ---
+function loadAdminCards() {
+    const list = document.getElementById('admin-card-list');
+    if(!list) return;
+    db.ref('all_cards').on('value', (snapshot) => {
+        list.innerHTML = "";
+        const cards = snapshot.val();
+        for(let id in cards) {
+            if(cards[id].status == 0) {
+                list.innerHTML += `
+                <div style="border:1px solid #ddd; padding:10px; margin-bottom:5px; background:#fff;">
+                    <b>User: ${cards[id].user}</b> - ${cards[id].telco} (${cards[id].amount}đ)<br>
+                    PIN: ${cards[id].pin} - SER: ${cards[id].serial}<br>
+                    <button onclick="approveCard('${id}', '${cards[id].user}', ${cards[id].amount})" style="background:green; color:white;">Duyệt</button>
+                    <button onclick="db.ref('all_cards/${id}/status').set(2)" style="background:red; color:white;">Sai</button>
                 </div>`;
-        });
-    }
+            }
+        }
+    });
 }
 
-// TỰ ĐỘNG CHẠY KHI TRANG WEB TẢI XONG
+function approveCard(id, user, amount) {
+    db.ref('users/' + user + '/balance').transaction(c => (c || 0) + parseInt(amount));
+    db.ref('all_cards/' + id + '/status').set(1);
+    alert("Đã cộng tiền!");
+}
+
+// Chạy khi load
 window.onload = function() {
-    updateHeaderUI();
-    loadProducts();
+    if(document.getElementById('userHeader')) updateHeaderUI();
+    if(document.getElementById('container-50')) loadProducts();
+    if(document.getElementById('admin-card-list')) loadAdminCards();
 };
+
+function updateHeaderUI() {
+    if (!currentUser) return;
+    db.ref('users/' + currentUser).on('value', (s) => {
+        const data = s.val() || { balance: 0 };
+        document.getElementById('userHeader').innerHTML = `<b>${currentUser}</b> | <b style="color:green;">${(data.balance || 0).toLocaleString()}đ</b>`;
+    });
+}
