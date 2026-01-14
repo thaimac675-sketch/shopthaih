@@ -1,21 +1,74 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Đăng nhập</title>
+    <meta charset="UTF-8"><title>Đăng nhập & Đăng ký</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .error { color: #e11d48; font-size: 12px; margin-bottom: 10px; display: none; }
+        b { color: #2563eb; cursor: pointer; }
+    </style>
 </head>
-<body style="font-family:sans-serif; text-align:center; padding-top:100px; background:#f1f5f9;">
-    <div style="background:white; display:inline-block; padding:30px; border-radius:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-        <h2 style="color:#e11d48;">ĐĂNG NHẬP SHOP</h2>
-        <input type="text" id="u" placeholder="Tên tài khoản" style="width:250px; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:8px;"><br>
-        <button onclick="login()" style="width:275px; padding:12px; background:#e11d48; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">VÀO CỬA HÀNG</button>
+<body>
+    <div class="card">
+        <div id="form-box">
+            <h2 id="title">ĐĂNG NHẬP</h2>
+            <div id="err-msg" class="error"></div>
+            <input type="text" id="u" placeholder="Tài khoản (ít nhất 6 ký tự)">
+            <input type="password" id="p" placeholder="Mật khẩu (ít nhất 6 ký tự)">
+            <button id="btn-submit" onclick="handleSubmit()">VÀO SHOP</button>
+            <p id="switch">Chưa có nick? <b onclick="toggleMode()">Đăng ký ngay</b></p>
+        </div>
     </div>
+
     <script>
-        function login() {
-            const user = document.getElementById('u').value.trim();
-            if(!user) return alert("Nhập tên!");
-            localStorage.setItem("currentUser", user);
-            if(!localStorage.getItem("balance_" + user)) localStorage.setItem("balance_" + user, "0");
-            window.location.href = "index.html";
+        let isLogin = true;
+        function toggleMode() {
+            isLogin = !isLogin;
+            document.getElementById('title').innerText = isLogin ? "ĐĂNG NHẬP" : "ĐĂNG KÝ";
+            document.getElementById('btn-submit').innerText = isLogin ? "VÀO SHOP" : "TẠO TÀI KHOẢN";
+            document.getElementById('switch').innerHTML = isLogin ? 'Chưa có nick? <b onclick="toggleMode()">Đăng ký ngay</b>' : 'Đã có nick? <b onclick="toggleMode()">Đăng nhập ngay</b>';
+        }
+
+        function handleSubmit() {
+            const u = document.getElementById('u').value.trim();
+            const p = document.getElementById('p').value.trim();
+            const err = document.getElementById('err-msg');
+            
+            if(u.length < 6 || p.length < 6) {
+                err.innerText = "Tài khoản và mật khẩu phải từ 6 ký tự trở lên!";
+                err.style.display = "block";
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem("all_users") || "[]");
+
+            if(isLogin) {
+                const found = users.find(user => user.username === u && user.password === p);
+                if(found) {
+                    localStorage.setItem("currentUser", u);
+                    window.location.href = "index.html";
+                } else {
+                    err.innerText = "Sai tài khoản hoặc mật khẩu!";
+                    err.style.display = "block";
+                }
+            } else {
+                const exists = users.find(user => user.username === u);
+                if(exists) {
+                    err.innerText = "Tài khoản này đã được sử dụng!";
+                    err.style.display = "block";
+                } else {
+                    users.push({ username: u, password: p, date: new Date().toLocaleString() });
+                    localStorage.setItem("all_users", JSON.stringify(users));
+                    localStorage.setItem("currentUser", u);
+                    localStorage.setItem("balance_" + u, "0");
+                    alert("Đăng ký thành công!");
+                    window.location.href = "index.html";
+                }
+            }
         }
     </script>
 </body>
