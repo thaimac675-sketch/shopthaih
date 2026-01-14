@@ -1,80 +1,134 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Nạp Thẻ - THAIPP</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp Thẻ Cào - THAIPP</title>
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; }
-        .box { background: white; padding: 20px; border-radius: 15px; max-width: 400px; margin: auto; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        .btn { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .history { margin-top: 20px; font-size: 13px; }
-        .status-0 { color: orange; } /* Chờ duyệt */
-        .status-1 { color: green; font-weight: bold; } /* Thành công */
-        .status-2 { color: red; } /* Thất bại */
+        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; margin: 0; }
+        .container { max-width: 450px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h2 { color: #e11d48; text-align: center; margin-top: 0; }
+        label { font-size: 13px; font-weight: bold; color: #475569; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 15px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-send { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .history { margin-top: 30px; border-top: 2px dashed #ddd; padding-top: 20px; }
+        .card-log { background: #f8fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e2e8f0; font-size: 13px; }
+        .status-0 { color: orange; font-weight: bold; } /* Chờ xử lý */
+        .status-1 { color: green; font-weight: bold; }  /* Thành công */
+        .status-2 { color: red; font-weight: bold; }    /* Thất bại */
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>💳 NẠP THẺ CÀO</h2>
-        <select id="telco">
-            <option value="VIETTEL">Viettel</option>
-            <option value="VINAPHONE">Vinaphone</option>
-            <option value="MOBIFONE">Mobifone</option>
-        </select>
-        <input type="number" id="serial" placeholder="Số Serial">
-        <input type="number" id="pin" placeholder="Mã thẻ">
-        <select id="amount">
-            <option value="10000">10,000đ</option>
-            <option value="50000">50,000đ</option>
-            <option value="100000">100,000đ</option>
-            <option value="500000">500,000đ</option>
-        </select>
-        <button class="btn" onclick="sendCard()">GỬI THẺ NGAY</button>
 
-        <div class="history">
-            <h3>📜 LỊCH SỬ NẠP</h3>
-            <div id="log-nạp"></div>
-        </div>
-        <p style="text-align:center"><a href="index.html">Quay lại</a></p>
+<div class="container">
+    <h2>💳 NẠP THẺ CÀO</h2>
+    
+    <label>Loại thẻ:</label>
+    <select id="telco">
+        <option value="VIETTEL">Viettel</option>
+        <option value="VINAPHONE">Vinaphone</option>
+        <option value="MOBIFONE">Mobifone</option>
+    </select>
+
+    <label>Mệnh giá:</label>
+    <select id="amount">
+        <option value="10000">10,000đ</option>
+        <option value="20000">20,000đ</option>
+        <option value="50000">50,000đ</option>
+        <option value="100000">100,000đ</option>
+        <option value="200000">200,000đ</option>
+        <option value="500000">500,000đ</option>
+    </select>
+
+    <label>Số Serial:</label>
+    <input type="text" id="serial" placeholder="Nhập số serial trên thẻ">
+
+    <label>Mã thẻ (PIN):</label>
+    <input type="text" id="pin" placeholder="Nhập mã thẻ sau lớp cào">
+
+    <button class="btn-send" onclick="handleSend()">GỬI THẺ DUYỆT</button>
+
+    <div class="history">
+        <h3 style="font-size:16px;">📜 LỊCH SỬ NẠP THẺ</h3>
+        <div id="history-content"></div>
     </div>
 
-    <script>
-        const user = localStorage.getItem("currentUser");
-        function sendCard() {
-            if(!user) return alert("Hãy đăng nhập!");
-            const card = {
-                id: Date.now(),
-                user: user,
-                telco: document.getElementById('telco').value,
-                serial: document.getElementById('serial').value,
-                pin: document.getElementById('pin').value,
-                amount: document.getElementById('amount').value,
-                status: 0, // 0: Chờ xử lý, 1: Thành công, 2: Thất bại
-                time: new Date().toLocaleString()
-            };
-            if(!card.serial || !card.pin) return alert("Nhập đủ thông tin!");
+    <p style="text-align:center; margin-top:20px;">
+        <a href="index.html" style="text-decoration:none; color:#64748b; font-size:14px;">← Quay lại trang chủ</a>
+    </p>
+</div>
 
-            let pending = JSON.parse(localStorage.getItem("all_cards") || "[]");
-            pending.push(card);
-            localStorage.setItem("all_cards", JSON.stringify(pending));
-            alert("Gửi thẻ thành công! Vui lòng chờ Admin duyệt.");
-            location.reload();
+<script>
+    const currentUser = localStorage.getItem("currentUser");
+
+    function handleSend() {
+        if(!currentUser) {
+            alert("Bạn cần đăng nhập để nạp thẻ!");
+            window.location.href = "login.html";
+            return;
         }
 
-        function showHistory() {
-            const all = JSON.parse(localStorage.getItem("all_cards") || "[]");
-            const mine = all.filter(c => c.user === user);
-            const container = document.getElementById("log-nạp");
-            mine.reverse().forEach(c => {
-                let st = c.status == 0 ? '<span class="status-0">Chờ xử lý</span>' : 
-                         c.status == 1 ? '<span class="status-1">Thành công</span>' : 
-                                         '<span class="status-2">Thất bại (Sai thẻ)</span>';
-                container.innerHTML += `<div style="border-bottom:1px solid #eee; padding:5px;">
-                    ${c.time} - <b>${parseInt(c.amount).toLocaleString()}đ</b><br>Trạng thái: ${st}
+        const telco = document.getElementById('telco').value;
+        const amount = document.getElementById('amount').value;
+        const serial = document.getElementById('serial').value.trim();
+        const pin = document.getElementById('pin').value.trim();
+
+        if(!serial || !pin) {
+            alert("Vui lòng nhập đầy đủ Serial và Mã thẻ!");
+            return;
+        }
+
+        const cardData = {
+            id: Date.now(),
+            user: currentUser,
+            telco: telco,
+            amount: amount,
+            serial: serial,
+            pin: pin,
+            status: 0, // 0: Chờ xử lý, 1: Thành công, 2: Thất bại
+            time: new Date().toLocaleString()
+        };
+
+        // Lưu vào danh sách tổng để Admin thấy
+        let allCards = JSON.parse(localStorage.getItem("all_cards") || "[]");
+        allCards.push(cardData);
+        localStorage.setItem("all_cards", JSON.stringify(allCards));
+
+        alert("Gửi thẻ thành công! Vui lòng đợi Admin kiểm tra.");
+        location.reload();
+    }
+
+    function loadHistory() {
+        if(!currentUser) {
+            document.getElementById('history-content').innerHTML = "<p style='color:gray'>Vui lòng đăng nhập để xem lịch sử.</p>";
+            return;
+        }
+
+        const allCards = JSON.parse(localStorage.getItem("all_cards") || "[]");
+        const myCards = allCards.filter(c => c.user === currentUser);
+        const container = document.getElementById('history-content');
+
+        if(myCards.length === 0) {
+            container.innerHTML = "<p style='color:gray'>Bạn chưa có yêu cầu nạp thẻ nào.</p>";
+            return;
+        }
+
+        myCards.reverse().forEach(c => {
+            let statusText = "";
+            if(c.status === 0) statusText = '<span class="status-0">Đang chờ duyệt...</span>';
+            else if(c.status === 1) statusText = '<span class="status-1">Thành công ✅</span>';
+            else statusText = '<span class="status-2">Thẻ lỗi/Sai mã ❌</span>';
+
+            container.innerHTML += `
+                <div class="card-log">
+                    <b>${c.telco} - ${parseInt(c.amount).toLocaleString()}đ</b><br>
+                    <small>${c.time}</small><br>
+                    Trạng thái: ${statusText}
                 </div>`;
-            });
-        }
-        window.onload = showHistory;
-    </script>
+        });
+    }
+
+    window.onload = loadHistory;
+</script>
 </body>
-    </html>
+</html>
