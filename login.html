@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8"><title>Đăng nhập - SHOP THAIPP</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - SHOP THAIPP</title>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
     <style>
         body { font-family: sans-serif; background: #0f172a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 15px; width: 90%; max-width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .error { color: #e11d48; font-size: 12px; margin-bottom: 10px; display: none; }
+        .card { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 380px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        h2 { color: #e11d48; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #e11d48; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .switch { margin-top: 15px; font-size: 14px; color: #64748b; }
+        .switch b { color: #2563eb; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="card">
-        <h2 id="title">ĐĂNG KÝ</h2>
-        <div id="err-msg" class="error"></div>
-        <input type="text" id="u" placeholder="Tài khoản (ít nhất 6 ký tự)">
-        <input type="password" id="p" placeholder="Mật khẩu (ít nhất 6 ký tự)">
-        <button onclick="handleAuth()">THỰC HIỆN</button>
-        <p id="switch" style="cursor:pointer; color:blue; font-size:14px;" onclick="isLogin = !isLogin; document.getElementById('title').innerText = isLogin ? 'ĐĂNG NHẬP' : 'ĐĂNG KÝ'">Chuyển sang Đăng nhập/Đăng ký</p>
+        <h2 id="auth-title">ĐĂNG NHẬP</h2>
+        <input type="text" id="username" placeholder="Tên tài khoản">
+        <input type="password" id="password" placeholder="Mật khẩu">
+        <button onclick="handleAuth()" id="auth-btn">ĐĂNG NHẬP</button>
+        <div class="switch" id="auth-switch">Chưa có tài khoản? <b onclick="toggleAuth()">Đăng ký ngay</b></div>
     </div>
 
     <script>
         const firebaseConfig = {
-            apiKey: "AIzaSyC75Af-i4AXLH6...",
+            apiKey: "AIzaSyC75Af-i4AXLH6X...",
+            authDomain: "shopthai-ea4c1.firebaseapp.com",
             databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
-            projectId: "shopthai-ea4c1"
+            projectId: "shopthai-ea4c1",
+            storageBucket: "shopthai-ea4c1.appspot.com",
+            messagingSenderId: "114276793671",
+            appId: "1:114276793671:web:0b257c70c675ef715f7d23"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let isLogin = false;
+        let isLogin = true;
+
+        function toggleAuth() {
+            isLogin = !isLogin;
+            document.getElementById('auth-title').innerText = isLogin ? "ĐĂNG NHẬP" : "ĐĂNG KÝ MỚI";
+            document.getElementById('auth-btn').innerText = isLogin ? "ĐĂNG NHẬP" : "TẠO TÀI KHOẢN";
+            document.getElementById('auth-switch').innerHTML = isLogin ? 'Chưa có tài khoản? <b onclick="toggleAuth()">Đăng ký ngay</b>' : 'Đã có tài khoản? <b onclick="toggleAuth()">Đăng nhập</b>';
+        }
 
         function handleAuth() {
-            const u = document.getElementById('u').value.trim();
-            const p = document.getElementById('p').value.trim();
-            if (u.length < 6 || p.length < 6) return alert("Tối thiểu 6 ký tự!");
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            if(u.length < 5) return alert("Tài khoản quá ngắn!");
 
             db.ref('users/' + u).once('value', (s) => {
-                const user = s.val();
-                if (isLogin) {
-                    if (user && user.password === p) {
+                const userData = s.val();
+                if(isLogin) {
+                    if(userData && userData.password === p) {
                         localStorage.setItem("currentUser", u);
                         window.location.href = "index.html";
                     } else alert("Sai tài khoản hoặc mật khẩu!");
                 } else {
-                    if (user) alert("Tài khoản đã tồn tại!");
+                    if(userData) alert("Tài khoản này đã tồn tại!");
                     else {
-                        db.ref('users/' + u).set({ password: p, balance: 0, date: new Date().toLocaleString() })
-                        .then(() => { alert("Đăng ký thành công!"); isLogin = true; });
+                        db.ref('users/' + u).set({ password: p, balance: 0 }).then(() => {
+                            alert("Đăng ký thành công! Hãy đăng nhập.");
+                            toggleAuth();
+                        });
                     }
                 }
             });
