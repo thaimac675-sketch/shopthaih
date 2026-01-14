@@ -42,45 +42,76 @@
 </section>
 
 <script>
+    // 1. CẬP NHẬT HEADER (HIỆN TÊN, TIỀN VÀ NÚT LỊCH SỬ)
     function updateHeader() {
         const user = localStorage.getItem("currentUser");
-        const header = document.getElementById("userHeader");
-        if (user && header) {
+        const headerDiv = document.getElementById("userHeader");
+
+        if (user && headerDiv) {
             const money = localStorage.getItem("balance_" + user) || "0";
-            header.innerHTML = `<b style="color:#e11d48;">${user}</b> | <b style="color:#16a34a;">${parseInt(money).toLocaleString()}đ</b> | <a href="#" onclick="logout()">Thoát</a>`;
+            headerDiv.innerHTML = `
+                <div style="text-align: right; line-height: 1.4; background: #fff1f2; padding: 8px 12px; border-radius: 10px; border: 1px solid #fecdd3;">
+                    <div style="color: #e11d48; font-weight: bold; font-size: 14px;">👤 ${user}</div>
+                    <div style="color: #16a34a; font-weight: bold; font-size: 15px;">💰 ${parseInt(money).toLocaleString()}đ</div>
+                    <div style="margin-top: 5px;">
+                        <a href="lichsu.html" style="color: #2563eb; font-size: 12px; font-weight: bold; text-decoration: none;">[Lịch sử mua]</a> | 
+                        <a href="javascript:void(0)" onclick="logout()" style="font-size: 12px; color: #64748b; text-decoration: none;">[Thoát]</a>
+                    </div>
+                </div>
+            `;
         }
     }
 
-    function logout() { localStorage.removeItem("currentUser"); location.reload(); }
+    function logout() {
+        if(confirm("Bạn muốn đăng xuất chứ?")) {
+            localStorage.removeItem("currentUser");
+            window.location.reload();
+        }
+    }
 
-    function filterPrice(max, btn) {
+    // 2. BỘ LỌC GIÁ CHUYÊN NGHIỆP
+    function filterPrice(maxPrice, btn) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const groups = ["50", "150", "500", "2000"];
-        groups.forEach(g => {
-            document.getElementById("section-" + g).style.display = (max === 'all' || parseInt(g) === max) ? "block" : "none";
+        const categories = ["50", "150", "250", "500", "2000"];
+        categories.forEach(cat => {
+            const section = document.getElementById("section-" + cat);
+            if (section) {
+                section.style.display = (maxPrice === 'all' || parseInt(cat) === maxPrice) ? "block" : "none";
+            }
         });
     }
 
+    // 3. TẢI DANH SÁCH ACC (CHỈ HIỆN ACC CHƯA BÁN)
     function loadProducts() {
-        const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
-        ["50", "150", "500", "2000"].forEach(id => document.getElementById("container-" + id).innerHTML = "");
-        list.forEach(acc => {
-            const html = `
-                <div class="card" style="border:1px solid #ddd; border-radius:10px; overflow:hidden;">
-                    <img src="${acc.img}" onerror="this.src='anh1.jpg'">
-                    <div style="padding:10px;">
-                        <h3 style="font-size:13px; margin:5px 0;">${acc.title}</h3>
-                        <p style="font-size:11px; color:#666;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
-                        <div class="price-tag">${parseInt(acc.price).toLocaleString()}đ</div>
-                        <button onclick="goDetail('${acc.id}')" style="width:100%; padding:8px; background:#3b82f6; color:white; border:none; border-radius:5px; font-weight:bold;">XEM NGAY</button>
+        const listAcc = JSON.parse(localStorage.getItem("shop_accs") || "[]");
+        const categories = ["50", "150", "250", "500", "2000"];
+        
+        categories.forEach(id => {
+            const el = document.getElementById("container-" + id);
+            if(el) el.innerHTML = "";
+        });
+
+        listAcc.forEach(acc => {
+            const cardHTML = `
+                <div class="card" style="border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: #fff;">
+                    <img src="${acc.img}" onerror="this.src='anh1.jpg'" style="width:100%; height:140px; object-fit:cover;">
+                    <div class="card-body" style="padding:10px;">
+                        <h3 style="font-size:13px; margin:5px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${acc.title}</h3>
+                        <p style="font-size:11px; color:#666; margin: 5px 0;">Tướng: ${acc.tuong} | Skin: ${acc.skin}</p>
+                        <div style="background:#f43f5e; color:white; padding:5px 10px; border-radius:6px; font-weight:bold; display:inline-block; margin:5px 0; font-size:14px;">
+                            ${parseInt(acc.price).toLocaleString()}đ
+                        </div>
+                        <button style="width:100%; padding:10px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="goDetail('${acc.id}')">XEM NGAY</button>
                     </div>
-                </div>`;
+                </div>
+            `;
             const target = document.getElementById("container-" + acc.cat);
-            if(target) target.innerHTML += html;
+            if (target) target.innerHTML += cardHTML;
         });
     }
 
+    // TRUYỀN DỮ LIỆU SANG TRANG CHI TIẾT
     function goDetail(id) {
         const list = JSON.parse(localStorage.getItem("shop_accs") || "[]");
         const found = list.find(a => a.id == id);
@@ -90,7 +121,10 @@
         }
     }
 
-    window.onload = () => { updateHeader(); loadProducts(); };
+    window.onload = function() {
+        updateHeader();
+        loadProducts();
+    };
 </script>
 </body>
-            </html>
+</html>
