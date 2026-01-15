@@ -3,98 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi tiết Acc - THAIPP</title>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <title>Chi Tiết Acc - SHOP THAIPP</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; margin: 0; padding: 15px; }
-        .container { max-width: 500px; margin: auto; background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        img { width: 100%; height: 250px; object-fit: cover; }
-        .content { padding: 20px; }
-        .price { font-size: 24px; color: #e11d48; font-weight: bold; margin: 10px 0; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .btn-buy { width: 100%; padding: 15px; background: #16a34a; color: white; border: none; border-radius: 10px; font-weight: bold; font-size: 18px; cursor: pointer; margin-top: 20px; }
+        .detail-container { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .detail-img { width: 100%; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px dashed #eee; }
+        .info-label { color: #64748b; font-weight: 500; }
+        .info-value { font-weight: bold; color: #1e293b; }
+        .price-big { font-size: 24px; color: #e11d48; font-weight: 800; text-align: center; margin: 20px 0; }
+        .btn-buy-now { width: 100%; padding: 15px; background: #e11d48; color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-buy-now:hover { background: #be123c; transform: translateY(-2px); }
+        .back-link { display: inline-block; margin-bottom: 15px; color: #64748b; text-decoration: none; font-size: 14px; }
     </style>
 </head>
 <body>
-    <div class="container" id="detail-page">
+
+<header>
+    <div class="logo"><a href="index.html" style="text-decoration:none; color:#e11d48;">★ SHOP THAIPP ★</a></div>
+    <div id="userHeader"></div>
+</header>
+
+<main style="padding: 10px;">
+    <div class="detail-container">
+        <a href="index.html" class="back-link">← Quay lại trang chủ</a>
+        
+        <div id="acc-detail-content">
+            <p style="text-align:center; padding:50px;">Đang tải thông tin Acc...</p>
         </div>
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC75Af-i4AXLH6X...",
-            authDomain: "shopthai-ea4c1.firebaseapp.com",
-            databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
-            projectId: "shopthai-ea4c1",
-            storageBucket: "shopthai-ea4c1.appspot.com",
-            messagingSenderId: "114276793671",
-            appId: "1:114276793671:web:0b257c70c675ef715f7d23"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        <div class="price-big" id="acc-price">0đ</div>
+        
+        <button class="btn-buy-now" onclick="buyAcc()">MUA NGAY</button>
+        
+        <div style="margin-top: 20px; font-size: 13px; color: #94a3b8; text-align: center;">
+            🛡️ Giao dịch tự động - Nhận tài khoản ngay lập tức sau khi mua.
+        </div>
+    </div>
+</main>
 
-        const accId = localStorage.getItem("viewingAccId");
-        const currentUser = localStorage.getItem("currentUser");
-
-        if(!accId) window.location.href = "index.html";
-
-        // Tải thông tin Acc
-        db.ref('shop_accs/' + accId).on('value', (s) => {
-            const acc = s.val();
-            if(!acc) {
-                document.getElementById('detail-page').innerHTML = "<p style='padding:20px;'>Tài khoản này đã bán hoặc không tồn tại!</p>";
-                return;
-            }
-            document.getElementById('detail-page').innerHTML = `
-                <img src="${acc.img}">
-                <div class="content">
-                    <h2>${acc.title}</h2>
-                    <div class="price">${parseInt(acc.price).toLocaleString()}đ</div>
-                    <div class="info-row"><span>Số tướng:</span> <b>${acc.tuong}</b></div>
-                    <div class="info-row"><span>Số trang phục:</span> <b>${acc.skin}</b></div>
-                    <div class="info-row"><span>Trạng thái:</span> <b style="color:green;">Đang bán</b></div>
-                    <button class="btn-buy" onclick="buyNow('${acc.id}', ${acc.price})">MUA NGAY</button>
-                    <p style="text-align:center;"><a href="index.html">Quay lại</a></p>
-                </div>`;
-        });
-
-        function buyNow(id, price) {
-            if(!currentUser) return alert("Bạn cần đăng nhập để mua!");
-            
-            db.ref('users/' + currentUser).once('value', (s) => {
-                const user = s.val();
-                if(!user || user.balance < price) return alert("Bạn không đủ tiền! Hãy nạp thêm.");
-
-                if(confirm("Xác nhận mua tài khoản này với giá " + price.toLocaleString() + "đ?")) {
-                    // 1. Trừ tiền
-                    const newBalance = user.balance - price;
-                    db.ref('users/' + currentUser + '/balance').set(newBalance);
-
-                    // 2. Lấy thông tin acc để lưu lịch sử trước khi xóa
-                    db.ref('shop_accs/' + id).once('value', (accSnap) => {
-                        const accData = accSnap.val();
-                        const historyItem = {
-                            title: accData.title,
-                            price: price,
-                            tk: accData.tk,
-                            mk: accData.mk,
-                            time: new Date().toLocaleString()
-                        };
-                        // Lưu lịch sử cho khách
-                        db.ref('history/' + currentUser).push(historyItem);
-
-                        // 3. Xóa Acc khỏi shop
-                        db.ref('shop_accs/' + id).remove().then(() => {
-                            alert("Mua thành công! Thông tin tài khoản đã nằm trong phần Lịch Sử.");
-                            window.location.href = "lichsu.html";
-                        });
-                    });
-                }
-            });
-        }
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 <script src="script.js"></script>
+
+<script>
+    // Hàm hiển thị dữ liệu riêng cho trang chi tiết
+    function displayAccDetail() {
+        const accId = localStorage.getItem("viewingAccId");
+        if (!accId) {
+            alert("Không tìm thấy thông tin Acc!");
+            window.location.href = "index.html";
+            return;
+        }
+
+        db.ref('shop_accs/' + accId).on('value', (snapshot) => {
+            const acc = snapshot.val();
+            if (!acc) {
+                // Trường hợp Acc vừa bị người khác mua mất
+                document.getElementById('acc-detail-content').innerHTML = "<h3>Acc này đã được bán hoặc không tồn tại!</h3>";
+                return;
+            }
+
+            document.getElementById('acc-detail-content').innerHTML = `
+                <img src="${acc.img}" class="detail-img" onerror="this.src='https://via.placeholder.com/400x200'">
+                <h2 style="margin-bottom:15px; color:#1e293b;">${acc.title}</h2>
+                
+                <div class="info-row">
+                    <span class="info-label">Mã số Acc:</span>
+                    <span class="info-value">#${accId.slice(-6)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Danh mục:</span>
+                    <span class="info-value">Liên Quân Dưới ${acc.cat}k</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Trạng thái:</span>
+                    <span class="info-value" style="color:green;">Đang bán</span>
+                </div>
+                <div style="margin-top:15px; line-height:1.6; color:#475569;">
+                    <b>Mô tả:</b> Acc sạch thông tin, trắng mail, có thể đổi mật khẩu ngay sau khi mua.
+                </div>
+            `;
+            document.getElementById('acc-price').innerText = parseInt(acc.price).toLocaleString() + "đ";
+        });
+    }
+
+    // Chạy khi load trang
+    window.onload = function() {
+        updateHeaderUI(); // Từ script.js để hiện tiền/user
+        displayAccDetail();
+    };
+</script>
+
 </body>
 </html>
