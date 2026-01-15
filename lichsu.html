@@ -3,67 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Sử Mua - THAIPP</title>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
+    <title>Lịch Sử Giao Dịch - SHOP THAIPP</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body { font-family: sans-serif; background: #f1f5f9; padding: 15px; }
-        .box { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; }
-        .item { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 10px; background: #fff; }
-        .acc-box { background: #eee; padding: 10px; margin-top: 10px; border-radius: 5px; border: 1px dashed #e11d48; }
-        h2 { color: #e11d48; text-align: center; }
+        .history-box { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #eee; padding: 10px; text-align: left; }
+        th { background: #f8fafc; color: #e11d48; }
+        .status-0 { color: orange; } .status-1 { color: green; font-weight: bold; } .status-2 { color: red; }
     </style>
 </head>
 <body>
+<header>
+    <div class="logo"><a href="index.html" style="text-decoration:none; color:#e11d48;">★ SHOP THAIPP ★</a></div>
+    <div id="userHeader"></div>
+</header>
 
-<div class="box">
-    <h2>🛒 ACC ĐÃ MUA</h2>
-    <div id="history-list">Đang tải lịch sử...</div>
-    <p style="text-align:center; margin-top:20px;"><a href="index.html" style="text-decoration:none; color:#2563eb;">← Quay lại Shop</a></p>
-</div>
+<main style="max-width: 900px; margin: auto; padding: 10px;">
+    <div class="history-box">
+        <h3 style="color: #2563eb;">🛒 ACC ĐÃ MUA (TK/MK)</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã Acc</th>
+                        <th>Tài khoản</th>
+                        <th>Mật khẩu</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody id="buy-history-list">
+                    <tr><td colspan="4" style="text-align:center;">Đang tải lịch sử mua...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyC75Af-i4AXLH6X...",
-        authDomain: "shopthai-ea4c1.firebaseapp.com",
-        databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
-        projectId: "shopthai-ea4c1",
-        storageBucket: "shopthai-ea4c1.appspot.com",
-        messagingSenderId: "114276793671",
-        appId: "1:114276793671:web:0b257c70c675ef715f7d23"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const user = localStorage.getItem("currentUser");
+    <div class="history-box">
+        <h3 style="color: #16a34a;">💳 LỊCH SỬ NẠP THẺ</h3>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Loại thẻ</th>
+                        <th>Mệnh giá</th>
+                        <th>Trạng thái</th>
+                        <th>Thời gian</th>
+                    </tr>
+                </thead>
+                <tbody id="card-history-list">
+                    <tr><td colspan="4" style="text-align:center;">Đang tải lịch sử nạp...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
 
-    if(!user) {
-        document.getElementById('history-list').innerHTML = "Vui lòng đăng nhập!";
-    } else {
-        db.ref('history/' + user).on('value', (s) => {
-            const data = s.val();
-            const list = document.getElementById('history-list');
-            list.innerHTML = "";
-            if(!data) {
-                list.innerHTML = "Bạn chưa mua tài khoản nào.";
-                return;
-            }
-            for(let id in data) {
-                const item = data[id];
-                list.innerHTML += `
-                    <div class="item">
-                        <b>${item.title}</b> <small>(${item.time})</small><br>
-                        Giá: <span style="color:red;">${parseInt(item.price).toLocaleString()}đ</span>
-                        <div class="acc-box">
-                            TK: <b style="color:blue;">${item.tk}</b><br>
-                            MK: <b style="color:blue;">${item.mk}</b>
-                        </div>
-                    </div>`;
-            }
-        });
-    }
-</script>
-    <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
 <script src="script.js"></script>
+<script>
+    // Tự động tải dữ liệu khi vào trang
+    window.onload = function() {
+        updateHeaderUI();
+        loadBuyHistory();
+        loadCardHistory();
+    };
+</script>
 </body>
 </html>
