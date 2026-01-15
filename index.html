@@ -6,143 +6,42 @@
     <title>SHOP THAIPP - Hệ Thống Bán Acc Tự Động</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Giao diện bổ sung cho Index */
-        main { max-width: 1000px; margin: auto; padding: 10px; }
-        
-        /* Thanh tìm kiếm và lọc */
-        .filter-bar {
-            background: white;
-            padding: 15px;
-            border-radius: 12px;
-            margin: 15px 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        .filter-item { flex: 1; min-width: 150px; }
-        .filter-item label { display: block; font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 5px; }
-        .filter-item select, .filter-item input { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; outline: none; }
-
-        /* Tiêu đề mục Acc */
-        .category-title { 
-            background: linear-gradient(90deg, #e11d48, #fb7185); 
-            color: white; 
-            padding: 12px 18px; 
-            border-radius: 10px; 
-            margin: 25px 0 15px 0; 
-            font-size: 16px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px 25px; 
-            background: white; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .nav-links a { text-decoration: none; margin-left: 15px; font-weight: 700; font-size: 14px; transition: 0.2s; }
-        .btn-deposit { color: #16a34a; border: 1px solid #16a34a; padding: 5px 12px; border-radius: 6px; }
-        .btn-deposit:hover { background: #16a34a; color: white; }
+        .category-header { background: #fff1f2; color: #e11d48; padding: 12px; font-weight: bold; border-left: 5px solid #e11d48; margin: 20px 0 10px 0; font-size: 15px; }
+        .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 5px; }
+        .filter-section { background: white; padding: 15px; margin: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .nav-links a { text-decoration: none; margin-left: 10px; font-weight: bold; font-size: 13px; }
+        .btn-buy-history { color: #f59e0b; } /* Màu cam cho lịch sử mua */
     </style>
 </head>
 <body>
-
 <header>
-    <div class="logo">
-        <a href="index.html" style="text-decoration:none; color:#e11d48; font-size: 22px;">★ SHOP THAIPP ★</a>
-    </div>
+    <div class="logo"><a href="index.html" style="text-decoration:none; color:#e11d48;">★ SHOP THAIPP ★</a></div>
     <div id="userHeader" class="nav-links">
-        <a href="login.html" style="color: #64748b;">Đăng nhập</a>
-        <a href="naptien.html" class="btn-deposit">Nạp tiền</a>
+        <a href="login.html">Đăng nhập</a>
     </div>
 </header>
 
-<main>
-    <div class="filter-bar">
-        <div class="filter-item">
-            <label>MỨC GIÁ MUỐN TÌM</label>
-            <select id="filterPrice" onchange="filterByPrice()">
-                <option value="all">Hiện tất cả Acc</option>
-                <option value="2000">Acc Cao Cấp (Dưới 2M)</option>
-                <option value="500">Acc Trung Cấp (Dưới 500k)</option>
-                <option value="150">Acc Giá Rẻ (Dưới 150k)</option>
-                <option value="50">Acc Sơ Cấp (Dưới 50k)</option>
-            </select>
-        </div>
-        <div class="filter-item">
-            <label>TÌM THEO MÃ SỐ (ID)</label>
-            <input type="text" id="searchID" placeholder="Nhập mã Acc..." onkeyup="searchAccByID()">
-        </div>
+<main style="max-width: 1000px; margin: auto;">
+    <div class="filter-section">
+        <input type="text" id="guestSearchID" placeholder="🔍 Nhập mã ID hoặc tên tướng..." onkeyup="searchGuest()" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:5px;">
+        
+        <select id="priceFilter" onchange="filterPrice()" style="width:100%; padding:10px; margin-top:10px; border:1px solid #ddd; border-radius:5px;">
+            <option value="all">💰 Tất cả túi tiền</option>
+            <option value="2000">Dưới 2.000.000đ</option>
+            <option value="500">Dưới 500.000đ</option>
+            <option value="250">Dưới 250.000đ</option>
+            <option value="150">Dưới 150.000đ</option>
+        </select>
     </div>
 
-    <section id="section-2000">
-        <div class="category-title">💎 ACC CAO CẤP (DƯỚI 2M) <span>MỚI NHẤT</span></div>
-        <div id="container-2000" class="grid-layout">
-            <p style="padding:20px; color:#94a3b8;">Đang quét dữ liệu từ Server...</p>
-        </div>
-    </section>
-
-    <section id="section-500">
-        <div class="category-title">🔥 ACC TRUNG CẤP (DƯỚI 500K)</div>
-        <div id="container-500" class="grid-layout"></div>
-    </section>
-
-    <section id="section-150">
-        <div class="category-title">⚡ ACC GIÁ RẺ (DƯỚI 150K)</div>
-        <div id="container-150" class="grid-layout"></div>
-    </section>
-
-    <section id="section-50">
-        <div class="category-title">🌟 ACC SƠ CẤP (DƯỚI 50K)</div>
-        <div id="container-50" class="grid-layout"></div>
-    </section>
+    <div id="sec-2000"><div class="category-header">★ ACC LIÊN QUÂN DƯỚI 2M</div><div id="container-2000" class="grid-layout"></div></div>
+    <div id="sec-500"><div class="category-header">★ ACC LIÊN QUÂN DƯỚI 500K</div><div id="container-500" class="grid-layout"></div></div>
+    <div id="sec-250"><div class="category-header">★ ACC LIÊN QUÂN DƯỚI 250K</div><div id="container-250" class="grid-layout"></div></div>
+    <div id="sec-150"><div class="category-header">★ ACC LIÊN QUÂN DƯỚI 150K</div><div id="container-150" class="grid-layout"></div></div>
 </main>
 
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database-compat.js"></script>
-
 <script src="script.js"></script>
-
-<script>
-    // Hàm bổ sung để lọc nhanh ngay trên trang Index
-    function filterByPrice() {
-        const selected = document.getElementById('filterPrice').value;
-        const sections = ["2000", "500", "150", "50";]
-        
-        sections.forEach(id => {
-            const sec = document.getElementById('section-' + id);
-            if (selected === "all" || selected === id) {
-                sec.style.display = "block";
-            } else {
-                sec.style.display = "none";
-            }
-        });
-    }
-
-    // Hàm tìm kiếm theo ID (Mã số Acc)
-    function searchAccByID() {
-        let input = document.getElementById('searchID').value.toLowerCase();
-        let cards = document.getElementsByClassName('card');
-        
-        for (let i = 0; i < cards.length; i++) {
-            // Giả sử tiêu đề Acc có chứa mã ID
-            if (cards[i].innerText.toLowerCase().includes(input)) {
-                cards[i].style.display = "";
-            } else {
-                cards[i].style.display = "none";
-            }
-        }
-    }
-</script>
-
 </body>
 </html>
