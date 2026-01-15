@@ -1,32 +1,32 @@
+// --- CONFIG FIREBASE (Thay bằng mã của bạn) ---
 const firebaseConfig = {
-  apiKey: "AIzaSyC75Af-i4AXLH6X...",
-  authDomain: "shopthai-ea4c1.firebaseapp.com",
-  databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
-  projectId: "shopthai-ea4c1",
-  storageBucket: "shopthai-ea4c1.appspot.com",
-  messagingSenderId: "114276793671",
-  appId: "1:114276793671:web:0b257c70c675ef715f7d23",
-  measurementId: "G-4SXB85FS4K"
+    apiKey: "AIzaSyC75Af-i4AXLH6X...",
+    authDomain: "shopthai-ea4c1.firebaseapp.com",
+    databaseURL: "https://shopthai-ea4c1-default-rtdb.firebaseio.com",
+    projectId: "shopthai-ea4c1",
+    storageBucket: "shopthai-ea4c1.appspot.com",
+    messagingSenderId: "114276793671",
+    appId: "1:114276793671:web:0b257c70c675ef715f7d23"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const currentUser = localStorage.getItem("currentUser");
 
-// --- TRANG CHỦ: Tải Acc theo từng khu vực ---
+// --- 1. TRANG CHỦ & TÌM KIẾM KHÁCH ---
 function loadProducts() {
     db.ref('shop_accs').on('value', (snapshot) => {
         const data = snapshot.val();
-        const cats = ["50", "150", "500", "2000"];
+        const cats = ["2000", "500", "250", "150"];
         cats.forEach(c => { if(document.getElementById('container-'+c)) document.getElementById('container-'+c).innerHTML = ""; });
 
         for (let id in data) {
             const acc = data[id];
             const html = `
-                <div class="card">
-                    <img src="${acc.img}" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="card" data-id="${id}" data-title="${acc.title.toLowerCase()}">
+                    <img src="${acc.img}">
                     <div class="card-body">
-                        <h3 style="font-size:13px; margin:0;">${acc.title}</h3>
+                        <h3 style="font-size:12px;">${acc.title} (ID: ${id.slice(-5)})</h3>
                         <div class="price">${parseInt(acc.price).toLocaleString()}đ</div>
                         <button class="btn-view" onclick="localStorage.setItem('viewingAccId','${id}'); window.location.href='chitiet.html'">XEM CHI TIẾT</button>
                     </div>
@@ -38,70 +38,125 @@ function loadProducts() {
     });
 }
 
-// --- ADMIN: Duyệt thẻ cào ---
-function loadAdminCards() {
-    const list = document.getElementById('admin-card-list');
-    if(!list) return;
-    db.ref('all_cards').on('value', (snapshot) => {
+function searchGuest() {
+    let input = document.getElementById('guestSearchID').value.toLowerCase();
+    let cards = document.getElementsByClassName('card');
+    for (let card of cards) {
+        card.style.display = (card.getAttribute('data-title').includes(input) || card.getAttribute('data-id').includes(input)) ? "" : "none";
+    }
+}
+
+// --- 2. QUẢN LÝ ADMIN (CỘNG TIỀN, TÌM KIẾM, DUYỆT THẺ) ---
+function addMoneyManual() {
+    const user = document.getElementById('add_user').value.trim();
+    const amount = document.getElementById('add_amount').value;
+    if (!user || !amount) return alert("Nhập đủ tên và tiền!");
+
+    db.ref('users/' + user).once('value', (s) => {
+        if (s.exists()) {
+            db.ref('users/' + user + '/balance').transaction(c => (c || 0) + parseInt(amount));
+            alert("Đã cộng tiền thành công!");
+        } else alert("Tài khoản không tồn tại!");
+    });
+}
+
+function searchAdmin() {
+    let input = document.getElementById('adminSearchInput').value.toLowerCase();
+    let rows = document.getElementById('admin-acc-list').getElementsByTagName('tr');
+    for (let row of rows) {
+        row.style.display = row.innerText.toLowerCase().includes(input) ? "" : "none";
+    }
+}
+
+function loadAdminData() {
+    // Danh sách Acc để tránh đăng trùng
+    db.ref('shop_accs').on('value', (s) => {
+        const list = document.getElementById('admin-acc-list');
+        if(!list) return;
         list.innerHTML = "";
-        const cards = snapshot.val();
+        const data = s.val();
+        for(let id in data) {
+            list.innerHTML += `<tr>
+                <td><b>${data[id].tk}</b></td>
+                <td>${parseInt(data[id].price).toLocaleString()}đ</td>
+                <td>${data[id].cat}k</td>
+                <td><button onclick="db.ref('shop_accs/${id}').remove()" style="color:red;">Xóa</button></td>
+            </tr>`;
+        }
+    });
+    // Duyệt thẻ
+    db.ref('all_cards').on('value', (s) => {
+        const div = document.getElementById('admin-card-list');
+        if(!div) return;
+        div.innerHTML = "";
+        const cards = s.val();
         for(let id in cards) {
             if(cards[id].status == 0) {
-                list.innerHTML += `
-                <div style="border:1px solid #ddd; padding:10px; margin-bottom:5px; background:#fff;">
-                    <b>User: ${cards[id].user}</b> - ${cards[id].telco} (${cards[id].amount}đ)<br>
-                    PIN: ${cards[id].pin} - SER: ${cards[id].serial}<br>
+                div.innerHTML += `<div style="border:1px solid #ddd; padding:10px; margin-bottom:5px;">
+                    User: ${cards[id].user} | ${cards[id].amount}đ<br>
+                    PIN: ${cards[id].pin} | SER: ${cards[id].serial}<br>
                     <button onclick="approveCard('${id}', '${cards[id].user}', ${cards[id].amount})" style="background:green; color:white;">Duyệt</button>
-                    <button onclick="db.ref('all_cards/${id}/status').set(2)" style="background:red; color:white;">Sai</button>
                 </div>`;
             }
         }
     });
 }
 
-function approveCard(id, user, amount) {
-    db.ref('users/' + user + '/balance').transaction(c => (c || 0) + parseInt(amount));
-    db.ref('all_cards/' + id + '/status').set(1);
-    alert("Đã cộng tiền!");
-}
-
-// Chạy khi load
-window.onload = function() {
-    if(document.getElementById('userHeader')) updateHeaderUI();
-    if(document.getElementById('container-50')) loadProducts();
-    if(document.getElementById('admin-card-list')) loadAdminCards();
-};
-
-function updateHeaderUI() {
-    if (!currentUser) return;
-    db.ref('users/' + currentUser).on('value', (s) => {
-        const data = s.val() || { balance: 0 };
-        document.getElementById('userHeader').innerHTML = `<b>${currentUser}</b> | <b style="color:green;">${(data.balance || 0).toLocaleString()}đ</b>`;
-    });
-}
-// Hàm lọc nhanh theo giá
-function filterByPrice() {
-    const selectedPrice = document.getElementById('filterPrice').value;
-    
-    // Danh sách các ID container tương ứng
-    const containers = ["50", "150", "500", "2000"];
-    
-    containers.forEach(cat => {
-        const element = document.getElementById('container-' + cat);
-        const title = element.previousElementSibling; // Lấy cái tiêu đề h2 phía trên
-        
-        if (selectedPrice === "all") {
-            // Hiện tất cả
-            element.style.display = "grid";
-            title.style.display = "flex";
-        } else if (selectedPrice === cat) {
-            // Chỉ hiện cái được chọn
-            element.style.display = "grid";
-            title.style.display = "flex";
-        } else {
-            // Ẩn các cái còn lại
-            element.style.display = "none";
-            title.style.display = "none";
+// --- 3. LỊCH SỬ MUA HÀNG (DÀNH CHO KHÁCH) ---
+function loadBuyHistory() {
+    const list = document.getElementById('buy-history-list');
+    if(!list || !currentUser) return;
+    db.ref('bought_accs/' + currentUser).on('value', (s) => {
+        list.innerHTML = "";
+        const data = s.val();
+        if(!data) { list.innerHTML = "<tr><td colspan='4'>Bạn chưa mua Acc nào.</td></tr>"; return; }
+        for(let id in data) {
+            list.innerHTML += `<tr>
+                <td>ID: ${id.slice(-5)}</td>
+                <td style="color:blue; font-weight:bold;">${data[id].tk}</td>
+                <td style="color:red; font-weight:bold;">${data[id].mk}</td>
+                <td>${data[id].time || 'Vừa xong'}</td>
+            </tr>`;
         }
     });
 }
+
+function loadCardHistory() {
+    const list = document.getElementById('card-history-list');
+    if(!list || !currentUser) return;
+    db.ref('all_cards').orderByChild('user').equalTo(currentUser).on('value', (s) => {
+        list.innerHTML = "";
+        const data = s.val();
+        for(let id in data) {
+            const st = ["Chờ duyệt", "Thành công", "Thẻ sai"][data[id].status];
+            list.innerHTML += `<tr>
+                <td>${data[id].telco}</td>
+                <td>${parseInt(data[id].amount).toLocaleString()}đ</td>
+                <td class="status-${data[id].status}">${st}</td>
+                <td>${data[id].time}</td>
+            </tr>`;
+        }
+    });
+}
+
+// --- TIỆN ÍCH CHUNG ---
+function updateHeaderUI() {
+    const header = document.getElementById('userHeader');
+    if (!header || !currentUser) return;
+    db.ref('users/' + currentUser).on('value', (s) => {
+        const data = s.val() || { balance: 0 };
+        header.innerHTML = `
+            <div style="text-align:right; font-size:12px;">
+                <b>👤 ${currentUser}</b> | <b style="color:green;">${data.balance.toLocaleString()}đ</b><br>
+                <a href="naptien.html" style="color:green;">[Nạp]</a>
+                <a href="lichsu.html" style="color:orange;">[Lịch sử]</a>
+                <a href="#" onclick="localStorage.clear(); location.reload();" style="color:gray;">[Thoát]</a>
+            </div>`;
+    });
+}
+
+window.onload = function() {
+    if(document.getElementById('container-2000')) loadProducts();
+    if(document.getElementById('admin-acc-list')) loadAdminData();
+    updateHeaderUI();
+};
